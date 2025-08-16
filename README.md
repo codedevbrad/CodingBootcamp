@@ -3,15 +3,16 @@ NEXT_PUBLIC_SITE_URL=https://thecodebootcamp.com              # prod
 NEXT_PUBLIC_SITE_URL=https://codingbootcamp-omega.vercel.app  # preview
 NEXT_PUBLIC_SITE_URL=http://localhost:3000                    # local
 
+
 AUTH_SECRET=********
 AUTH_GITHUB_ID=******
 AUTH_GITHUB_SECRET=********
 NEXTAUTH_URL=http://localhost:3000
 
 
-staging branch  - http://localhost:3000
-dev branch      - https://codingbootcamp-omega.vercel.app/
-prod branch     - www.thecodebootcamp.com
+local branch    - http://localhost:3000
+dev   branch    - https://codingbootcamp-omega.vercel.app/
+main  branch    - www.thecodebootcamp.com
 
 github developer settings > create new 0auth App 
     > codebootcamp (dev)
