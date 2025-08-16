@@ -4,6 +4,7 @@ import { Providers } from "./auth.provider";
 
 import "./globals.css";
 import Header from "./components/header";
+import SiteUrlDisplay from "./components/env.display,";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +30,9 @@ export default async function RootLayout({ children }: Readonly<{
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <SiteUrlDisplay />
            <Header />
            <main>
-              so cool
              {children}
            </main>
         </Providers>

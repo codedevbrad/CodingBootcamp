@@ -20,3 +20,8 @@ github developer settings > create new 0auth App
     > codebootcamp  (prod)
         url - https://codingbootcamp-omega.vercel.app/
         auth callback url - https://codingbootcamp-omega.vercel.app/api/auth/callback/github
+
+
+in vercel > set dev (branch) to point to > https://codingbootcamp-omega.vercel.app/
+
+will dev:featureA trigger auto deploys?

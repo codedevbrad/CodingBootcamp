@@ -6,7 +6,7 @@ export default async function Header() {
   const session = await auth()
 
   return (
-    <header className="w-full border-b bg-background">
+    <header className="w-full  bg-background">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Left side */}
         <Link href="/" className="text-lg font-bold">
