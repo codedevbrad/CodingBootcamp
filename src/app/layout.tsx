@@ -31,6 +31,7 @@ export default async function RootLayout({ children }: Readonly<{
         <Providers>
            <Header />
            <main>
+              so cool
              {children}
            </main>
         </Providers>
