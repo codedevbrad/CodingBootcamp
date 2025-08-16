@@ -1,35 +1,112 @@
 // auth.ts
-import NextAuth from "next-auth"
-import GitHub from "next-auth/providers/github" // swap/add providers as needed
+import NextAuth from "next-auth";
+import GitHub from "next-auth/providers/github";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 
-export const { 
-  handlers: { GET, POST },  // for /api/auth/[...nextauth]
-  auth,                      // server helper: await auth()
-  signIn, signOut            // server actions (optional)
+declare module "next-auth" {
+  interface Session {
+    provider?: string;
+    accessToken?: string;
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role?: string;
+    };
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    provider?: string;
+    accessToken?: string;
+    role?: string;
+  }
+}
+
+console.log("🔧 Auth.ts: Initializing NextAuth configuration");
+console.log("🔧 Environment check:", {
+  hasAuthSecret: !!process.env.AUTH_SECRET,
+  hasGithubId: !!process.env.AUTH_GITHUB_ID,
+  hasGithubSecret: !!process.env.AUTH_GITHUB_SECRET,
+});
+
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn, signOut
 } = NextAuth({
-  secret: process.env.AUTH_SECRET, // required in prod
-  session: { strategy: "jwt" },    // no DB needed
+  secret: process.env.AUTH_SECRET,
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
       clientSecret: process.env.AUTH_GITHUB_SECRET!,
     }),
-    // Add more providers here (Google, Credentials, etc.)
   ],
-  // (Optional) callbacks to shape the session/JWT
- callbacks: {
-  async jwt({ token, account }) {
-    if (account) {
-      token.provider = account.provider
-      token.accessToken = account.access_token
-    }
-    return token
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log("🔑 SignIn callback triggered");
+      console.log("🔑 User:", JSON.stringify(user, null, 2));
+      console.log("🔑 Account:", JSON.stringify(account, null, 2));
+      console.log("🔑 Profile:", JSON.stringify(profile, null, 2));
+      return true;
+    },
+    
+    async jwt({ token, account, user }) {
+      console.log("🎫 JWT callback triggered");
+      
+      if (user) {
+        console.log("🎫 Setting user role:", (user as any).role ?? "user");
+        token.role = (user as any).role ?? "user";
+      }
+      
+      if (account) {
+        console.log("🎫 Setting provider:", account.provider);
+        console.log("🎫 Setting access token:", !!account.access_token);
+        token.provider = account.provider;
+        token.accessToken = account.access_token;
+      }
+      return token;
+    },
+    
+    async session({ session, token }) {
+      console.log("👤 Session callback triggered");
+      
+      session.provider = token.provider;
+      session.accessToken = token.accessToken;
+      // @ts-expect-error augment
+      session.user.id = token.sub!;
+      // @ts-expect-error augment
+      session.user.role = token.role as string | undefined;
+      
+      console.log("👤 Session (after):");
+      return session;
+    },
   },
-  async session({ session, token }) {
-    session.provider = token.provider
-    session.accessToken = token.accessToken
-    session.user.id = token.sub!
-    return session
+  events: {
+    async signIn(message) {
+      console.log("📧 Event: signIn", JSON.stringify(message, null, 2));
+    },
+    async signOut(message) {
+      console.log("📧 Event: signOut", JSON.stringify(message, null, 2));
+    },
+    async createUser(message) {
+      console.log("📧 Event: createUser", JSON.stringify(message, null, 2));
+    },
+    async updateUser(message) {
+      console.log("📧 Event: updateUser", JSON.stringify(message, null, 2));
+    },
+    async linkAccount(message) {
+      console.log("📧 Event: linkAccount", JSON.stringify(message, null, 2));
+    },
+    async session() {
+      console.log("📧 Event: session");
+    },
   },
-}
-})
+  debug: process.env.NODE_ENV === "development", // Enable built-in debug logs
+});
+
+console.log("✅ Auth.ts: NextAuth configuration complete");
