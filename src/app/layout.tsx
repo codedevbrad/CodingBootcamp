@@ -30,7 +30,10 @@ export default async function RootLayout({ children }: Readonly<{
       >
         <Providers>
            <Header />
-           {children}
+           <body>
+             {children}
+           </body>
+          
         </Providers>
       </body>
     </html>
