@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rimraf node_modules pnpm-lock.yaml package-lock.json"
+    "pull-envs": "npx vercel env pull .env.production"
   },
   "dependencies": {
     "next": "15.4.6",
