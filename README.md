@@ -9,9 +9,9 @@ AUTH_GITHUB_SECRET=********
 NEXTAUTH_URL=http://localhost:3000
 
 
-dev branch  - http://localhost:3000
-prod branch - https://codingbootcamp-omega.vercel.app/
-
+staging branch  - http://localhost:3000
+dev branch      - https://codingbootcamp-omega.vercel.app/
+prod branch     - www.thecodebootcamp.com
 
 github developer settings > create new 0auth App 
     > codebootcamp (dev)
