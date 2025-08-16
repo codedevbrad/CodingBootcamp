@@ -17,18 +17,19 @@ export const {
     // Add more providers here (Google, Credentials, etc.)
   ],
   // (Optional) callbacks to shape the session/JWT
-  callbacks: {
-    async jwt({ token, account, profile }) {
-      // attach anything you need to the token on first sign in
-      if (account?.provider === "github") {
-        token.provider = "github"
-      }
-      return token
-    },
-    async session({ session, token }) {
-      // expose token fields on the session
-      session.provider = (token as any).provider
-      return session
-    },
+ callbacks: {
+  async jwt({ token, account }) {
+    if (account) {
+      token.provider = account.provider
+      token.accessToken = account.access_token
+    }
+    return token
   },
+  async session({ session, token }) {
+    session.provider = token.provider
+    session.accessToken = token.accessToken
+    session.user.id = token.sub!
+    return session
+  },
+}
 })
