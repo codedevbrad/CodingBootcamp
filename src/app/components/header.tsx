@@ -2,6 +2,7 @@
 import Link from "next/link"
 import { auth, signIn, signOut } from "@/auth"
 
+
 export default async function Header() {
   const session = await auth()
 
