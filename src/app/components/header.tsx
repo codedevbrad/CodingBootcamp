@@ -1,6 +1,7 @@
 // components/header.tsx
 import Link from "next/link"
 import { auth, signIn, signOut } from "@/auth"
+import Image from "next/image"
 
 
 export default async function Header() {
@@ -19,10 +20,11 @@ export default async function Header() {
           {session ? (
             <div className="flex items-center gap-3">
               {session.user?.image && (
-                <img
+                <Image
                   src={session.user.image}
                   alt={session.user.name ?? "user avatar"}
                   className="h-8 w-8 rounded-full"
+                  width={30} height={30}
                 />
               )}
               <span className="text-sm">{session.user?.name ?? session.user?.email}</span>
