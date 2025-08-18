@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // auth.ts
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
@@ -77,9 +78,7 @@ export const {
       
       session.provider = token.provider;
       session.accessToken = token.accessToken;
-      // @ts-expect-error augment
       session.user.id = token.sub!;
-      // @ts-expect-error augment
       session.user.role = token.role as string | undefined;
       
       console.log("👤 Session (after):");
