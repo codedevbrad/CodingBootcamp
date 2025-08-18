@@ -3,7 +3,8 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
+import { UserRole } from "./generated/prisma";
 
 declare module "next-auth" {
   interface Session {
@@ -14,15 +15,16 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      role?: string;
+      role?: UserRole;
     };
   }
 }
+
 declare module "next-auth/jwt" {
   interface JWT {
     provider?: string;
     accessToken?: string;
-    role?: string;
+    role?: UserRole;
   }
 }
 
@@ -59,9 +61,20 @@ export const {
     async jwt({ token, account, user }) {
       console.log("🎫 JWT callback triggered");
       
-      if (user) {
-        console.log("🎫 Setting user role:", (user as any).role ?? "user");
-        token.role = (user as any).role ?? "user";
+      if (user?.id) {
+        // Fetch user with role from database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { role: true }
+        });
+        
+        if (dbUser) {
+          token.role = dbUser.role;
+          console.log("🎫 Setting user role from DB:", dbUser.role);
+        } else {
+          token.role = UserRole.STUDENT; // Default role
+          console.log("🎫 Setting default role:", UserRole.STUDENT);
+        }
       }
       
       if (account) {
@@ -70,6 +83,7 @@ export const {
         token.provider = account.provider;
         token.accessToken = account.access_token;
       }
+      
       return token;
     },
     
@@ -79,9 +93,9 @@ export const {
       session.provider = token.provider;
       session.accessToken = token.accessToken;
       session.user.id = token.sub!;
-      session.user.role = token.role as string | undefined;
+      session.user.role = token.role;
       
-      console.log("👤 Session (after):");
+      console.log("👤 Session user role:", session.user.role);
       return session;
     },
   },
@@ -105,7 +119,7 @@ export const {
       console.log("📧 Event: session");
     },
   },
-  debug: process.env.NODE_ENV === "development", // Enable built-in debug logs
+  debug: process.env.NODE_ENV === "development",
 });
 
 console.log("✅ Auth.ts: NextAuth configuration complete");

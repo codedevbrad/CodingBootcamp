@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { auth, signIn, signOut } from "@/auth"
 import Image from "next/image"
-
+import DarkModeToggle from "@/components/darkmode/mode-toggle"
 
 export default async function Header() {
   const session = await auth()
@@ -16,7 +16,8 @@ export default async function Header() {
         </Link>
 
         {/* Right side */}
-        <div>
+        <div className="flex flex-row gap-4">
+          <DarkModeToggle />
           {session ? (
             <div className="flex items-center gap-3">
               {session.user?.image && (
@@ -53,7 +54,7 @@ export default async function Header() {
                 type="submit"
                 className="rounded-md bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
               >
-                Sign in with GitHub
+                Sign in
               </button>
             </form>
           )}
