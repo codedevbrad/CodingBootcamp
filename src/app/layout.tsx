@@ -33,6 +33,8 @@ export default async function RootLayout({ children }: Readonly<{
           <SiteUrlDisplay />
            <Header />
            <main>
+
+             app
              {children}
            </main>
         </Providers>
