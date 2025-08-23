@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Header from "./(layout)/header";
+import Header from "./(layout)/header"
 
 export const metadata: Metadata = {
   title: "The code bootcamp",

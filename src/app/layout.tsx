@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 {children}
               </main>
               <BootcampSettings />
-           </ThemeProvider>=
+           </ThemeProvider>
         </Providers>
       </body>
     </html>

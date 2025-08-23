@@ -1,30 +1,16 @@
 'use client';
 
 import { User, TutorProfile } from '@/generated/prisma'
-import { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  Users, 
-  TrendingUp,
-  Settings,
-  LogOut,
-  ChevronDown,
-  MessageSquare,
-  BookOpen,
-  Clock,
-  Award,
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import DarkModeToggle from "@/components/darkmode/mode-toggle";
+import {  Calendar, Users,  MessageSquare, BookOpen, Clock } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import DarkModeToggle from "@/components/custom/darkmode"
+
+import { useCurrentTime } from '../../hooks/hook.usetime';
+
+import { getInitials , getGreeting , getGreetingEmoji } from '../../utils'
+
+import ProfileDropdown from './sub.dropdown';
+import TutorSetupChecklist from '../../components/setup.requirements';
 
 // Types
 interface TutorHeaderProps {
@@ -34,50 +20,6 @@ interface TutorHeaderProps {
   tutorProfile: TutorProfile;
 }
 
-interface GreetingState {
-  currentTime: Date | null;
-  isClient: boolean;
-}
-
-// Utility Functions
-const getInitials = (name: string | null): string => {
-  if (!name) return 'T';
-  return name.split(' ').map(n => n[0]).join('').toUpperCase();
-};
-
-const getGreeting = (currentTime: Date | null, isClient: boolean): string => {
-  if (!isClient || !currentTime) return 'Hello';
-  
-  const hour = currentTime.getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-};
-
-const getGreetingEmoji = (currentTime: Date | null, isClient: boolean): string => {
-  if (!isClient || !currentTime) return '👋';
-  
-  const hour = currentTime.getHours();
-  if (hour < 12) return '🌅';
-  if (hour < 17) return '☀️';
-  return '🌙';
-};
-
-// Hook for managing time state
-const useCurrentTime = (): GreetingState => {
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    setCurrentTime(new Date());
-    
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return { currentTime, isClient };
-};
 
 // Background Component
 const HeaderBackground = () => (
@@ -92,6 +34,7 @@ const HeaderBackground = () => (
     </div>
   </>
 );
+
 
 // Logo Component
 const TutorLogo = () => (
@@ -110,19 +53,6 @@ const TutorLogo = () => (
   </div>
 );
 
-// Greeting Component
-interface GreetingProps {
-  tutorName: string | null;
-  currentTime: Date | null;
-  isClient: boolean;
-}
-
-const TutorGreeting = ({ tutorName, currentTime, isClient }: GreetingProps) => (
-  <p className="text-sm text-muted-foreground flex items-center space-x-1">
-    <span>{getGreeting(currentTime, isClient)}, {tutorName?.split(' ')[0] || 'Tutor'}!</span>
-    <span className="animate-bounce">{getGreetingEmoji(currentTime, isClient)}</span>
-  </p>
-);
 
 // Action Buttons Component
 const ActionButtons = () => (
@@ -136,68 +66,6 @@ const ActionButtons = () => (
   </div>
 );
 
-// Profile Dropdown Component
-interface ProfileDropdownProps {
-  tutor: User;
-}
-
-const ProfileDropdown = ({ tutor }: ProfileDropdownProps) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="flex items-center space-x-3 h-12 cursor-pointer hover:bg-accent transition-colors">
-        <div className="relative">
-          <Avatar className="h-10 w-10 ring-2 ring-primary/20">
-            <AvatarImage src={tutor.image || undefined} />
-            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold">
-              {getInitials(tutor.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-400 rounded-full border-2 border-background"></div>
-        </div>
-        <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-      </Button>
-    </DropdownMenuTrigger>
-
-    <DropdownMenuContent align="end" className="w-64 p-2">
-      <DropdownMenuLabel className="pb-2">
-        <div className="flex items-center space-x-3">
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={tutor.image || undefined} />
-            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-              {getInitials(tutor.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium text-foreground">{tutor.name}</p>
-            <p className="text-xs text-muted-foreground">{tutor.email}</p>
-          </div>
-        </div>
-      </DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem className="hover:bg-blue-50 dark:hover:bg-blue-950/50">
-        <Settings className="mr-3 h-4 w-4" />
-        <span>Profile Settings</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem className="hover:bg-green-50 dark:hover:bg-green-950/50">
-        <TrendingUp className="mr-3 h-4 w-4" />
-        <span>Performance Analytics</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem className="hover:bg-purple-50 dark:hover:bg-purple-950/50">
-        <Users className="mr-3 h-4 w-4" />
-        <span>My Students</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem className="hover:bg-yellow-50 dark:hover:bg-yellow-950/50">
-        <Award className="mr-3 h-4 w-4" />
-        <span>Achievements</span>
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50">
-        <LogOut className="mr-3 h-4 w-4" />
-        <span>Sign out</span>
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
 
 // Status Section Component
 interface StatusSectionProps {
@@ -267,23 +135,18 @@ const SecondaryBar = ({ currentTime, isClient }: SecondaryBarProps) => (
 // Main Header Content Component
 interface MainHeaderProps {
   tutor: User;
-  currentTime: Date | null;
-  isClient: boolean;
 }
 
-const MainHeader = ({ tutor, currentTime, isClient }: MainHeaderProps) => (
+
+const MainHeader = ({ tutor }: MainHeaderProps) => (
   <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="flex items-center justify-between h-20">
       <div className="flex items-center space-x-6">
         <TutorLogo />
-        <TutorGreeting 
-          tutorName={tutor.name} 
-          currentTime={currentTime} 
-          isClient={isClient} 
-        />
       </div>
 
       <div className="flex items-center space-x-3">
+        <TutorSetupChecklist />
         <ActionButtons />
         <ProfileDropdown tutor={tutor} />
         <DarkModeToggle />
@@ -292,6 +155,7 @@ const MainHeader = ({ tutor, currentTime, isClient }: MainHeaderProps) => (
   </div>
 );
 
+
 // Main Component
 export default function AnimatedTutorHeader({ tutor }: TutorHeaderProps) {
   const { currentTime, isClient } = useCurrentTime();
@@ -299,17 +163,17 @@ export default function AnimatedTutorHeader({ tutor }: TutorHeaderProps) {
   return (
     <header className="relative bg-background border-b border-border shadow-lg overflow-hidden">
       <HeaderBackground />
-      <MainHeader tutor={tutor} currentTime={currentTime} isClient={isClient} />
+      <MainHeader tutor={tutor}  />
       <SecondaryBar currentTime={currentTime} isClient={isClient} />
     </header>
   );
 }
 
+
 // Export individual components for reuse
 export {
   HeaderBackground,
   TutorLogo,
-  TutorGreeting,
   ActionButtons,
   ProfileDropdown,
   StatusSection,

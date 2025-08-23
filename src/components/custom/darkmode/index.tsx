@@ -1,9 +1,9 @@
-// components/mode-toggle.tsx
 "use client"
 
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Moon, Sun } from "lucide-react"
+
 
 export default function DarkModeToggle ( ) {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -12,6 +12,7 @@ export default function DarkModeToggle ( ) {
   return (
     <Button
       variant="outline"
+      className="cursor-pointer"
       size="icon"
       aria-label="Toggle dark mode"
       onClick={() => setTheme(isDark ? "light" : "dark")}

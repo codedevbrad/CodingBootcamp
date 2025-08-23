@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db/prisma'
 import { redirect } from 'next/navigation'
-import TutorHubHeader from "./(layout)/header"
+import TutorHubHeader from "./(layout)/header/header"
 
 export const metadata: Metadata = {
   title: "TutorHub - The Code Bootcamp",
@@ -31,7 +31,7 @@ export default async function TutorHubLayout({ children }: Readonly<{ children: 
       tutorProfile: true,
       accounts: true,
     }
-  })
+  });
 
   // Double-check tutor exists and has profile
   if (!tutor || tutor.role !== 'TUTOR') {
@@ -46,9 +46,9 @@ export default async function TutorHubLayout({ children }: Readonly<{ children: 
   return (
     <div className="min-h-screen bg-gray-50">
       <TutorHubHeader tutor={tutor} tutorProfile={tutor.tutorProfile} />
-      <main>
+      <div>
         {children}
-      </main>
+      </div>
     </div>
   )
 }

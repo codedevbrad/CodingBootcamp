@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // auth.ts
-import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/db/prisma";
-import { UserRole } from "./generated/prisma";
+
+import NextAuth from "next-auth"
+import GitHub from "next-auth/providers/github"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { prisma } from "@/lib/db/prisma"
+import { UserRole } from "./generated/prisma"
+import { CreateNewStudent} from "./app/(website)/platform/authflow/auth.onboard"
 
 declare module "next-auth" {
   interface Session {
@@ -106,8 +108,15 @@ export const {
     async signOut(message) {
       console.log("📧 Event: signOut", JSON.stringify(message, null, 2));
     },
-    async createUser(message) {
-      console.log("📧 Event: createUser", JSON.stringify(message, null, 2));
+    async createUser({user}) {
+      console.log("📧 Event: createUser" , user.id );
+       try {
+          await CreateNewStudent( user );
+      } 
+      catch (error) {
+        console.error("Error creating StudentProfile:", error)
+        // Don't throw - we don't want to prevent user creation if profile creation fails
+      }
     },
     async updateUser(message) {
       console.log("📧 Event: updateUser", JSON.stringify(message, null, 2));

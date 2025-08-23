@@ -1,26 +1,11 @@
-'use client';
+'use client'
 
-import { TutorProfile, User } from '@/generated/prisma';
-import { useState } from 'react';
-import { useTheme } from 'next-themes';
-import { 
-  Calendar, 
-  Users, 
-  TrendingUp,
-  Settings,
-  BookOpen,
-  Clock,
-  Award,
-  DollarSign,
-  Star,
-  Activity,
-  Eye,
-  Edit3,
-  BarChart3
-} from 'lucide-react';
+import { TutorProfile, User } from '@/generated/prisma'
+import { useState } from 'react'
+import { Calendar, Users, TrendingUp, Settings, BookOpen, Clock, DollarSign, Star, Activity, Eye, Edit3, BarChart3 } from 'lucide-react'
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import DarkModeToggle from "@/components/darkmode/mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 
 interface TutorDashboardProps {
   tutor: User & {
@@ -30,8 +15,9 @@ interface TutorDashboardProps {
   tutorProfile: TutorProfile;
 }
 
+
 // Overview Tab Component
-function OverviewTab({ tutor, tutorProfile }: { tutor: User; tutorProfile: TutorProfile }) {
+function OverviewTab({ }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Enhanced Stats Cards */}
@@ -262,7 +248,6 @@ function SettingsTab() {
 
 export default function TutorDashboard({ tutor, tutorProfile }: TutorDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
-  const { theme } = useTheme();
 
   const getInitials = (name: string | null) => {
     if (!name) return 'T';
@@ -304,7 +289,6 @@ export default function TutorDashboard({ tutor, tutorProfile }: TutorDashboardPr
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <DarkModeToggle />
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Hourly Rate</p>
                   <p className="text-2xl font-bold text-green-600 flex items-center">
@@ -317,11 +301,12 @@ export default function TutorDashboard({ tutor, tutorProfile }: TutorDashboardPr
           </div>
 
           {/* Enhanced Navigation Tabs */}
+
           <div className="relative px-6">
             <nav className="flex space-x-8">
               {[
                 { id: 'overview', label: 'Overview', icon: BarChart3 },
-                { id: 'profile', label: 'Profile', icon: Users },
+                { id: 'profile' , label: 'Profile', icon: Users },
                 { id: 'sessions', label: 'Sessions', icon: Calendar },
                 { id: 'earnings', label: 'Earnings', icon: TrendingUp },
                 { id: 'settings', label: 'Settings', icon: Settings },

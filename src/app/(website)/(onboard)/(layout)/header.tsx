@@ -2,7 +2,8 @@
 import Link from "next/link"
 import { auth, signIn, signOut } from "@/auth"
 import Image from "next/image"
-import DarkModeToggle from "@/components/darkmode/mode-toggle"
+import DarkModeToggle from "@/components/custom/darkmode"
+import { Button } from "@/components/ui/button"
 
 export default async function Header() {
   const session = await auth()
@@ -12,7 +13,7 @@ export default async function Header() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Left side */}
         <Link href="/" className="text-lg font-bold">
-          TheCodeBootcamp
+           <div className="text-2xl font-bold"> <h1> The code bootcamp </h1> </div>
         </Link>
 
         {/* Right side */}
@@ -44,19 +45,9 @@ export default async function Header() {
               </form>
             </div>
           ) : (
-            <form
-              action={async () => {
-                "use server"
-                await signIn("github")
-              }}
-            >
-              <button
-                type="submit"
-                className="rounded-md bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
-              >
-                Sign in
-              </button>
-            </form>
+            <Link href={`/platform`}>
+                <Button> Go to Platform </Button>
+            </Link>
           )}
         </div>
       </nav>
