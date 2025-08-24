@@ -1,174 +1,119 @@
-// scripts/setup-tutor.ts
-// Script to convert any user to a TUTOR with basic profile
-// Run with: npm run setup:tutor <email>
-
-import { prisma  } from "@/lib/db/prisma"
+// scripts/convert-student-to-tutor.ts
+// Run with:  pnpm tsx scripts/convert-student-to-tutor.ts alice@example.com [--yes]
+/* eslint-disable no-console */
+import { prisma } from "@/lib/db/prisma"
 import { UserRole } from "@/generated/prisma"
 
-async function setupTutor(email: string) {
-  console.log(`🎓 TUTOR SETUP: Converting user to TUTOR role`);
-  console.log(`📧 Email: ${email}\n`);
+async function main() {
+  const email = process.argv[2]
+  const autoYes = process.argv.includes("--yes")
 
-  try {
-    // Step 1: Find the user
-    console.log('🔍 Step 1: Finding user...');
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        tutorProfile: true,
-        studentProfile: true,
-        adminProfile: true,
-      }
-    });
-
-    if (!user) {
-      console.log(`❌ User with email "${email}" not found`);
-      
-      // Show available users
-      const allUsers = await prisma.user.findMany({
-        select: { email: true, name: true, role: true },
-        take: 10,
-      });
-      
-      if (allUsers.length > 0) {
-        console.log('\n📋 Available users:');
-        allUsers.forEach(u => {
-          console.log(`   - ${u.email} (${u.name}) - ${u.role}`);
-        });
-      }
-      
-      return false;
-    }
-
-    console.log(`✅ Found user: ${user.name} (${user.id})`);
-    console.log(`   Current role: ${user.role}`);
-    console.log(`   Existing profiles:`);
-    console.log(`     - Student: ${user.studentProfile ? '✅' : '❌'}`);
-    console.log(`     - Tutor: ${user.tutorProfile ? '✅' : '❌'}`);
-    console.log(`     - Admin: ${user.adminProfile ? '✅' : '❌'}`);
-
-    // Step 2: Check if already a tutor
-    if (user.role === 'TUTOR' && user.tutorProfile) {
-      console.log('\n✅ User is already a TUTOR with profile');
-      console.log(`   Bio: "${user.tutorProfile.bio || 'None'}"`);
-      console.log(`   Hourly Rate: $${user.tutorProfile.hourlyRate || 'Not set'}`);
-      console.log('✅ No changes needed');
-      return true;
-    }
-
-    // Step 3: Show what will happen
-    console.log('\n📊 Changes to be made:');
-    console.log(`   Role: ${user.role} → TUTOR`);
-    console.log(`   Tutor Profile: Will be created`);
-    
-    if (user.studentProfile || user.adminProfile) {
-      console.log('\n⚠️  Existing profiles that will be removed:');
-      if (user.studentProfile) console.log('     - Student profile');
-      if (user.adminProfile) console.log('     - Admin profile');
-    }
-
-    console.log('\n⏳ Proceeding in 2 seconds... (Ctrl+C to cancel)');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Step 4: Execute the conversion
-    console.log('\n🔄 Step 2: Converting to TUTOR...');
-
-    await prisma.$transaction(async (tx) => {
-      // Delete existing profiles that conflict
-      if (user.studentProfile) {
-        await tx.studentProfile.delete({
-          where: { userId: user.id }
-        });
-        console.log('   ✅ Removed student profile');
-      }
-
-      if (user.adminProfile) {
-        await tx.adminProfile.delete({
-          where: { userId: user.id }
-        });
-        console.log('   ✅ Removed admin profile');
-      }
-
-      // Update user role
-      await tx.user.update({
-        where: { id: user.id },
-        data: { role: UserRole.TUTOR }
-      });
-      console.log('   ✅ Updated user role to TUTOR');
-
-      // Create basic tutor profile (no bio or hourlyRate required)
-      await tx.tutorProfile.upsert({
-        where: { userId: user.id },
-        create: {
-          userId: user.id,
-          // bio and hourlyRate are optional, so we can omit them
-        },
-        update: {
-          // Keep existing bio/rate if updating
-        }
-      });
-      console.log('   ✅ Created tutor profile');
-    });
-
-    // Step 5: Verification
-    console.log('\n🔍 Step 3: Verifying setup...');
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        tutorProfile: true,
-        studentProfile: true,
-        adminProfile: true,
-      }
-    });
-
-    if (updatedUser?.role === 'TUTOR' && updatedUser.tutorProfile) {
-      console.log('✅ Verification successful!');
-      console.log('\n🎉 TUTOR SETUP COMPLETE!');
-      console.log(`👤 User: ${updatedUser.name} (${updatedUser.email})`);
-      console.log(`🎭 Role: ${updatedUser.role}`);
-      console.log(`📅 Profile created: ${updatedUser.tutorProfile.createdAt}`);
-      
-      console.log('\n📋 Profile status:');
-      console.log(`   - Student profile: ${updatedUser.studentProfile ? '✅' : '❌'}`);
-      console.log(`   - Tutor profile: ${updatedUser.tutorProfile ? '✅' : '❌'}`);
-      console.log(`   - Admin profile: ${updatedUser.adminProfile ? '✅' : '❌'}`);
-
-      console.log('\n💡 Next steps:');
-      console.log('   - User can now access tutor features');
-      console.log('   - Bio and hourly rate can be added later via UI');
-      console.log('   - Additional tutor details can be configured');
-
-      return true;
-    } else {
-      console.log('❌ Verification failed - setup incomplete');
-      return false;
-    }
-
-  } catch (error) {
-    console.error('💥 Error during tutor setup:', error);
-    return false;
-  } finally {
-    await prisma.$disconnect();
+  if (!email) {
+    console.log("❌ Please provide a user email")
+    console.log("Usage: pnpm tsx scripts/convert-student-to-tutor.ts <email> [--yes]")
+    process.exit(1)
   }
-}
 
-// Get email from command line
-const userEmail = process.argv[2];
+  console.log(`🎓 Converting user to TUTOR`)
+  console.log(`📧 ${email}\n`)
 
-if (!userEmail) {
-  console.log('❌ Please provide a user email');
-  console.log('Usage: npm run setup:tutor <email>');
-  console.log('Example: npm run setup:tutor alice@example.com');
-  process.exit(1);
-}
-
-// Run the setup
-setupTutor(userEmail)
-  .then(success => {
-    console.log(`\n📊 Tutor setup ${success ? 'COMPLETED' : 'FAILED'}`);
-    process.exit(success ? 0 : 1);
+  const user = await prisma.user.findUnique({
+    where: { email },
+    include: {
+      tutorProfile: true,
+      studentProfile: true,
+      adminProfile: true,
+    },
   })
-  .catch(error => {
-    console.error('Setup crashed:', error);
-    process.exit(1);
-  });
+
+  if (!user) {
+    console.log(`❌ No user found for ${email}`)
+    const candidates = await prisma.user.findMany({
+      select: { email: true, name: true, role: true },
+      take: 10,
+      orderBy: { createdAt: "desc" } as any, // ignore if you don’t have createdAt
+    })
+    if (candidates.length) {
+      console.log("\n📋 Recent users:")
+      for (const u of candidates) {
+        console.log(`  - ${u.email} (${u.name ?? "—"}) [${u.role}]`)
+      }
+    }
+    process.exit(1)
+  }
+
+  console.log(`✅ Found: ${user.name ?? "Unnamed"} (${user.id}) [${user.role}]`)
+  console.log(`   Profiles: student=${!!user.studentProfile ? "✅" : "❌"}  tutor=${!!user.tutorProfile ? "✅" : "❌"}  admin=${!!user.adminProfile ? "✅" : "❌"}`)
+
+  // Idempotency: already a tutor with profile
+  if (user.role === UserRole.TUTOR && user.tutorProfile) {
+    console.log("\n✅ Already a TUTOR with profile. Nothing to do.")
+    await prisma.$disconnect()
+    process.exit(0)
+  }
+
+  // Plan
+  console.log("\n📊 Planned changes:")
+  if (user.role !== UserRole.TUTOR) console.log(`  - Role: ${user.role} → TUTOR`)
+  if (!user.tutorProfile) console.log(`  - Create TutorProfile`)
+  if (user.studentProfile) console.log(`  - Delete StudentProfile (subscriptions & assignments cascade)`)
+  if (user.adminProfile) console.log(`  - Delete AdminProfile`)
+
+  if (!autoYes) {
+    console.log("\n⏳ Proceeding in 2 seconds… (Ctrl+C to cancel)")
+    await new Promise((r) => setTimeout(r, 2000))
+  }
+
+  // Execute
+  await prisma.$transaction(async (tx) => {
+    // Remove conflicting profiles (CASCADE does the heavy lifting downstream)
+    if (user.studentProfile) {
+      await tx.studentProfile.delete({ where: { userId: user.id } })
+      console.log("   ✅ Removed StudentProfile (related rows removed via CASCADE)")
+    }
+    if (user.adminProfile) {
+      await tx.adminProfile.delete({ where: { userId: user.id } })
+      console.log("   ✅ Removed AdminProfile")
+    }
+
+    // Update role
+    if (user.role !== UserRole.TUTOR) {
+      await tx.user.update({ where: { id: user.id }, data: { role: UserRole.TUTOR } })
+      console.log("   ✅ Updated user role → TUTOR")
+    }
+
+    // Ensure tutor profile
+    await tx.tutorProfile.upsert({
+      where: { userId: user.id },
+      create: { userId: user.id },
+      update: {},
+    })
+    console.log("   ✅ Ensured TutorProfile")
+  })
+
+  // Re‑read for verification
+  const updated = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: {
+      tutorProfile: true,
+      studentProfile: true,
+      adminProfile: true,
+    },
+  })
+
+  const ok = !!updated && updated.role === UserRole.TUTOR && !!updated.tutorProfile
+  console.log("\n🔍 Verification:", ok ? "✅ OK" : "❌ FAILED")
+  if (ok) {
+    console.log(`👤 ${updated!.email} now has role ${updated!.role}`)
+    console.log(`   StudentProfile: ${updated!.studentProfile ? "✅" : "❌"}  TutorProfile: ${updated!.tutorProfile ? "✅" : "❌"}  AdminProfile: ${updated!.adminProfile ? "✅" : "❌"}`)
+  }
+
+  await prisma.$disconnect()
+  process.exit(ok ? 0 : 1)
+}
+
+main().catch(async (e) => {
+  console.error("💥 Script error:", e)
+  await prisma.$disconnect()
+  process.exit(1)
+});

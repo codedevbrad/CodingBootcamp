@@ -6,14 +6,15 @@ export const metadata: Metadata = {
   description: "Learning Application",
 };
 
-
 export default async function RootLayout({ children }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
         <div>
             <Header />
-            {children}
+            <div className="">
+               {children}
+            </div>
         </div>
   );
 }

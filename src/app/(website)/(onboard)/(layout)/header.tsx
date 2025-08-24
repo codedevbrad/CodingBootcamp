@@ -1,20 +1,21 @@
-// components/header.tsx
 import Link from "next/link"
-import { auth, signIn, signOut } from "@/auth"
+import { auth , signOut } from "@/auth"
 import Image from "next/image"
 import DarkModeToggle from "@/components/custom/darkmode"
 import { Button } from "@/components/ui/button"
+import HeaderLogo from "@/components/app/app"
 
 export default async function Header() {
   const session = await auth()
 
   return (
-    <header className="w-full  bg-background">
+    <header className="py-3 w-full bg-background">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         {/* Left side */}
-        <Link href="/" className="text-lg font-bold">
-           <div className="text-2xl font-bold"> <h1> The code bootcamp </h1> </div>
-        </Link>
+        <div className="text-lg font-bold flex flex-row items-center gap-2">
+           <HeaderLogo url={"/"} />
+           <div className="text-2xl font-bold"> <h1> Code Bootcamp </h1> </div>
+        </div>
 
         {/* Right side */}
         <div className="flex flex-row gap-4">

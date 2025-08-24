@@ -5,6 +5,7 @@ import { Providers } from "../lib/auth/auth.provider"
 import { ThemeProvider } from "./themeProvider"
 import BootcampSettings from "./components/settings"
 import "./globals.css"
+import LoadingBar from "@/components/app/loading/loadingBar"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +29,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
            <ThemeProvider>
-              <main>
-                {children}
-              </main>
+              <LoadingBar />
+                  <div className="flex-grow flex flex-col">
+                      {children}
+                  </div>
               <BootcampSettings />
            </ThemeProvider>
         </Providers>

@@ -7,12 +7,25 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000                    # local
 AUTH_SECRET=********
 AUTH_GITHUB_ID=******
 AUTH_GITHUB_SECRET=********
-NEXTAUTH_URL=http://localhost:3000
+
+AUTH_GOOGLE_ID=*******
+AUTH_GOOGLE_SECRET=********
+
+
+SERVICE_ENCRYPTION_KEY=your-32-character-secret-key-here-123
 
 
 local branch    - http://localhost:3000
 dev   branch    - https://codingbootcamp-omega.vercel.app/
 main  branch    - www.thecodebootcamp.com
+
+
+google auth
+
+    callback urls
+    > http://localhost:3000/api/auth/callback/google                     #local
+    > https://codingbootcamp-omega.vercel.app/api/auth/callback/google   #preview
+
 
 github developer settings > create new 0auth App 
 

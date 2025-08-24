@@ -23,6 +23,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts" , "src/types", "src/app/components/settings/env.display,tsx" ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts" , "src/types", "src/app/components/settings/env.display,tsx", "prisma/seed.ts" ],
   "exclude": ["node_modules"]
 }

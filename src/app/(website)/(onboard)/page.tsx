@@ -1,103 +1,69 @@
-import Image from "next/image";
+'use client'
+import React from 'react'
 
-export default function Home() {
+export default function CodeBootcampHero() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="pt-9 min-h-screen bg-gradient-to-br from-emerald-300 via-teal-200 to-cyan-200">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero Section */}
+      <main className="flex items-center justify-center min-h-[80vh] px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-black leading-tight mb-8">
+            <div className="mb-4">
+              <span className="text-black">Launch </span>
+              <span className="bg-black text-white px-4 py-2 rounded-lg italic transform -rotate-1 inline-block">
+                tech-career
+              </span>
+            </div>
+            <div className="mb-4">
+              <span className="text-black">bootcamp </span>
+              <span className="text-black italic">faster</span>
+              <span className="ml-4 text-4xl">💻</span>
+              <span className="text-black ml-4">with</span>
+            </div>
+            <div>
+              <span className="text-black">industry-ready </span>
+              <span className="underline underline-offset-8 decoration-4 decoration-black">skills</span>
+            </div>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto mb-12 leading-relaxed">
+            Transform your future in 16 weeks. Master full-stack development, 
+            land your dream job, and join thousands of successful graduates 
+            working at top tech companies.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+            <button className="bg-black text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              Apply Now - Next Cohort Starts Feb 2025
+            </button>
+            <button className="border-2 border-black text-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-black hover:text-white transition-all duration-300">
+              Download Curriculum
+            </button>
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-black">94%</div>
+              <div className="text-gray-600">Job Placement Rate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-black">$85K</div>
+              <div className="text-gray-600">Average Starting Salary</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-black">500+</div>
+              <div className="text-gray-600">Hiring Partners</div>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      {/* Floating Elements */}
+      <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-white/20 rounded-full animate-pulse"></div>
+      <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-white/30 rounded-full animate-bounce"></div>
+      <div className="absolute bottom-1/4 left-1/3 w-12 h-12 bg-white/25 rounded-full animate-pulse"></div>
     </div>
-  );
+  )
 }
