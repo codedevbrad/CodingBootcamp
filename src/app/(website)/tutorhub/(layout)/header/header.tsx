@@ -1,24 +1,29 @@
 'use client';
 
-import { User, TutorProfile } from '@/generated/prisma'
-import {  Calendar, Users,  MessageSquare, BookOpen, Clock } from 'lucide-react'
+import { Calendar, Users,  MessageSquare, BookOpen, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import DarkModeToggle from "@/components/custom/darkmode"
 
-import { useCurrentTime } from '../../hooks/hook.usetime';
+import { useCurrentTime } from '../../hooks/hook.usetime'
 
 import { getInitials , getGreeting , getGreetingEmoji } from '../../utils'
 
-import ProfileDropdown from './sub.dropdown';
-import TutorSetupChecklist from '../../components/setup.requirements';
+import ProfileDropdown from './sub.dropdown'
+import TutorSetupChecklist from '../../components/setup.requirements'
+import CreateNewSession from '../../db/sessions/session/create/ui.create';
 
-// Types
-interface TutorHeaderProps {
-  tutor: User & {
-    tutorProfile: TutorProfile | null;
-  };
-  tutorProfile: TutorProfile;
-}
+
+// Action Buttons Component
+const ActionButtons = () => (
+  <div className="flex items-center space-x-2">
+    <Button variant="ghost" size="sm" className="hover:bg-accent transition-colors">
+      <Calendar className="h-5 w-5" />
+    </Button>
+    <Button variant="ghost" size="sm" className="hover:bg-accent transition-colors">
+      <MessageSquare className="h-5 w-5" />
+    </Button>
+  </div>
+);
 
 
 // Background Component
@@ -54,19 +59,6 @@ const TutorLogo = () => (
 );
 
 
-// Action Buttons Component
-const ActionButtons = () => (
-  <div className="flex items-center space-x-2">
-    <Button variant="ghost" size="sm" className="hover:bg-accent transition-colors">
-      <Calendar className="h-5 w-5" />
-    </Button>
-    <Button variant="ghost" size="sm" className="hover:bg-accent transition-colors">
-      <MessageSquare className="h-5 w-5" />
-    </Button>
-  </div>
-);
-
-
 // Status Section Component
 interface StatusSectionProps {
   currentTime: Date | null;
@@ -86,24 +78,13 @@ const StatusSection = ({ currentTime, isClient }: StatusSectionProps) => (
         <span className="font-mono">{currentTime.toLocaleTimeString()}</span>
       </div>
     )}
-    
-    <div className="hidden lg:flex items-center space-x-2 text-sm text-muted-foreground">
-      <Calendar className="h-4 w-4" />
-      <span>Next: <strong className="text-foreground">Physics Tutoring</strong> at 3:00 PM</span>
-    </div>
   </div>
 );
 
 // Quick Actions Component
 const QuickActions = () => (
   <div className="flex items-center space-x-3">
-    <Button 
-      size="sm" 
-      className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0"
-    >
-      <Users className="mr-2 h-4 w-4" />
-      Start New Session
-    </Button>
+    <CreateNewSession />
     <Button 
       variant="outline" 
       size="sm" 
@@ -133,12 +114,8 @@ const SecondaryBar = ({ currentTime, isClient }: SecondaryBarProps) => (
 );
 
 // Main Header Content Component
-interface MainHeaderProps {
-  tutor: User;
-}
 
-
-const MainHeader = ({ tutor }: MainHeaderProps) => (
+const MainHeader = () => (
   <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="flex items-center justify-between h-20">
       <div className="flex items-center space-x-6">
@@ -148,7 +125,7 @@ const MainHeader = ({ tutor }: MainHeaderProps) => (
       <div className="flex items-center space-x-3">
         <TutorSetupChecklist />
         <ActionButtons />
-        <ProfileDropdown tutor={tutor} />
+        <ProfileDropdown />
         <DarkModeToggle />
       </div>
     </div>
@@ -157,13 +134,13 @@ const MainHeader = ({ tutor }: MainHeaderProps) => (
 
 
 // Main Component
-export default function AnimatedTutorHeader({ tutor }: TutorHeaderProps) {
+export default function AnimatedTutorHeader({  }) {
   const { currentTime, isClient } = useCurrentTime();
 
   return (
     <header className="relative bg-background border-b border-border shadow-lg overflow-hidden">
       <HeaderBackground />
-      <MainHeader tutor={tutor}  />
+      <MainHeader  />
       <SecondaryBar currentTime={currentTime} isClient={isClient} />
     </header>
   );

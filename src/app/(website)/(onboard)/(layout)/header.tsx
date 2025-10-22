@@ -46,10 +46,12 @@ export default async function Header() {
               </form>
             </div>
           ) : (
-            <Link href={`/platform`}>
-                <Button> Go to Platform </Button>
-            </Link>
+             null
           )}
+          <Link href={`/auth/rolecheck`}>
+              <Button> Go to Platform </Button>
+          </Link>
+
         </div>
       </nav>
     </header>

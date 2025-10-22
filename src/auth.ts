@@ -48,6 +48,9 @@ export const {
   secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  pages: {
+    signIn: '/auth/login'
+  },
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
@@ -73,56 +76,48 @@ export const {
       // scopes: ["openid", "email", "profile"], // optional (defaults are fine)
     }),
   ],
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log("🔑 SignIn callback triggered");
-      console.log("🔑 User:", JSON.stringify(user, null, 2));
-      console.log("🔑 Account:", JSON.stringify(account, null, 2));
-      console.log("🔑 Profile:", JSON.stringify(profile, null, 2));
-      return true;
-    },
+// auth.ts
+callbacks: {
+  async jwt({ token, user, account }) {
+    // 🔁 Always resolve a user id (first login: user.id, later: token.sub)
+    const userId = user?.id ?? token.sub;
 
-    async jwt({ token, account, user }) {
-      console.log("🎫 JWT callback triggered");
-
-      if (user?.id) {
+    try {
+      if (userId) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true }
+          where: { id: userId },
+          select: { role: true },
         });
 
-        if (dbUser) {
-          token.role = dbUser.role;
-          console.log("🎫 Setting user role from DB:", dbUser.role);
-        } else {
-          token.role = UserRole.STUDENT; // Default role
-          console.log("🎫 Setting default role:", UserRole.STUDENT);
-        }
+        // Keep role in sync with DB; fall back to existing token role or STUDENT
+        token.role = dbUser?.role ?? (token.role as UserRole) ?? UserRole.STUDENT;
+      } else {
+        // No user yet (should be rare) – ensure a sane default
+        token.role = (token.role as UserRole) ?? UserRole.STUDENT;
       }
-
-      if (account) {
-        console.log("🎫 Setting provider:", account.provider);
-        console.log("🎫 Setting access token:", !!account.access_token);
-        token.provider = account.provider;
-        token.accessToken = account.access_token;
-      }
-
-      return token;
-    },
-
-    async session({ session, token }) {
-      console.log("👤 Session callback triggered");
-
-      session.provider = token.provider;
-      session.accessToken = token.accessToken;
-      session.user.id = token.sub!;
-      session.user.role = token.role;
-
-      console.log("👤 Session user role:", session.user.role);
-      return session;
+    } catch (err) {
+      console.error("🎫 JWT role refresh failed:", err);
+      // Don’t break auth if DB is down; keep previous or default
+      token.role = (token.role as UserRole) ?? UserRole.STUDENT;
     }
+
+    // Provider metadata (first login or when account rotates)
+    if (account) {
+      token.provider = account.provider;
+      if (account.access_token) token.accessToken = account.access_token;
+    }
+
+    return token;
   },
-  
+
+  async session({ session, token }) {
+    session.provider = token.provider as string | undefined;
+    session.accessToken = token.accessToken as string | undefined;
+    session.user.id = token.sub!;
+    session.user.role = token.role as UserRole | undefined;
+    return session;
+  },
+},
   events: {
     async signIn(message) {
       console.log("📧 Event: signIn", JSON.stringify(message, null, 2));

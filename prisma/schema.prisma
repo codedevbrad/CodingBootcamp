@@ -3,10 +3,12 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 
 model Account {
   id                String  @id @default(cuid())
@@ -27,6 +29,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -35,6 +38,7 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 
 model VerificationToken {
   identifier String
@@ -62,36 +66,6 @@ model ServiceKey {
 }
 
 
-enum AssignmentStatus {
-  ACTIVE
-  PAUSED
-  COMPLETED
-  CANCELLED
-}
-
-model TutorAssignment {
-  id String @id @default(cuid())
-
-  subscriptionId String       @unique
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-
-  tutorProfileId String
-  tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade) // 👈 add
-
-  studentProfileId String
-  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade) // 👈 add
-
-  status     AssignmentStatus @default(ACTIVE)
-  assignedAt DateTime         @default(now())
-  endedAt    DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([tutorProfileId])
-  @@index([studentProfileId])
-}
-
 
 
 enum UserRole {
@@ -99,6 +73,7 @@ enum UserRole {
   TUTOR
   STUDENT
 }
+
 
 model User {
   id            String    @id @default(cuid())
@@ -130,6 +105,8 @@ model TutorProfile {
 
   tutorAssignments TutorAssignment[]
 
+  availability Json? // e.g. { "monday": ["10:00", "14:00"], "tuesday": ["09:00", "13:00"] }
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -141,6 +118,7 @@ model StudentProfile {
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscriptions    Subscription[]
+
   tutorAssignments TutorAssignment[]
 
   createdAt DateTime @default(now())
@@ -166,12 +144,14 @@ enum SubscriptionTier {
   TUTORED
 }
 
+
 enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELLED
   PENDING
 }
+
 
 model Subscription {
   id String @id @default(cuid())
@@ -197,4 +177,112 @@ model Subscription {
   @@index([studentProfileId])
   @@index([status])
   @@index([endDate])
+}
+
+
+
+enum AssignmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+
+model TutorAssignment {
+  id String @id @default(cuid())
+
+  subscriptionId String       @unique
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  tutorProfileId String
+  tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade) // 👈 add
+
+  studentProfileId String
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade) // 👈 add
+
+  homework   Homework[]
+  sessions   TutoringSession[]
+
+  status     AssignmentStatus @default(ACTIVE)
+  assignedAt DateTime         @default(now())
+  endedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tutorProfileId])
+  @@index([studentProfileId])
+}
+
+
+
+enum SessionLength {
+  MIN60
+  MIN90
+  MIN120
+}
+
+
+model TutoringSession {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+
+  // who
+  tutorAssignmentId String
+  tutorAssignment   TutorAssignment @relation(fields: [tutorAssignmentId], references: [id], onDelete: Cascade)
+
+  // when
+  startTime  DateTime
+  length     SessionLength  @default(MIN60)
+
+  // housekeeping
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([startTime])
+}
+
+
+enum HomeworkStatus {
+  DRAFT
+  ASSIGNED
+  IN_PROGRESS
+  SUBMITTED
+  RETURNED
+  COMPLETED
+  CANCELLED
+}
+
+
+model Homework {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+
+  // 👇 the single relation you care about
+  tutorAssignmentId String
+  tutorAssignment   TutorAssignment @relation(fields: [tutorAssignmentId], references: [id], onDelete: Cascade)
+
+  // store your structured homework content
+  tasks Json
+
+  // workflow tracking
+  status      HomeworkStatus @default(ASSIGNED)
+  dueDate     DateTime?
+  submittedAt DateTime?
+  gradedAt    DateTime?
+
+  // optional grading + notes
+  grade     Decimal? @db.Decimal(5, 2)
+  feedback  String?
+  metadata  Json? // optional extra info like { version, tags, etc. }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tutorAssignmentId])
+  @@index([status])
+  @@index([dueDate])
 }

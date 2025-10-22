@@ -58,7 +58,7 @@ export async function requireRole({
 }
 
 /* ----------------------------------- */
-/* Convenience wrappers                 */
+/* Convenience wrappers                */
 /* ----------------------------------- */
 
 export async function requireTutor(returnTo = "/tutorHub") {

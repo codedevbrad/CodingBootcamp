@@ -3,10 +3,9 @@ import { auth } from "@/auth"
 import { prisma } from "../db/prisma"
 
 export async function getCurrentUserId() {
-  const session = await auth()
-  const userId = session?.user?.id as string | undefined
-  if (!userId) throw new Error("Unauthorized")
-  return userId
+  const session = await auth();
+  if (!session?.user?.id) throw new Error('User not authenticated');
+  return session.user.id;
 }
 
 // Helper function to get user with profile

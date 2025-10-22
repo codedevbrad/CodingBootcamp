@@ -1,18 +1,22 @@
 import type { Metadata } from "next"
-import { requireStudent } from "@/lib/auth/auth.requirerole"
 import Header from "./(layout)/header"
+import MyLearningHub from "./(layout)/profileHubCard"
 
 export const metadata: Metadata = {
   title: "The Code Bootcamp",
   description: "Student platform",
 }
 
+
+
 export default async function PlatformLayout({ children }: { children: React.ReactNode }) {
-  await requireStudent("/platform")
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen font-sans">
       <Header />
-      <div>{children}</div>
+      <div className="p-5">
+        {children}
+        <MyLearningHub />
+      </div>
     </div>
   )
 }
