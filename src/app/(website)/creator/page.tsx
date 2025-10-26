@@ -1,7 +1,7 @@
 export default function CreatorDashboard ( ) {
     return (
         <div>
-            Craetor page 
+            Creator page 
         </div>
     )
 }

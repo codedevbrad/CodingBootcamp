@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full"> 
+      <main className="w-full font-sans"> 
         <CreatorHeader />
         <div className="p-4">
             {children}

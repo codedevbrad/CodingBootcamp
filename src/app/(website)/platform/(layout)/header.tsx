@@ -1,8 +1,9 @@
-import { HeaderNavbar } from "./navbar";
-import { bootcampLogoRedirect } from "@/flows";
-import HeaderLogo from "@/components/app/app";
-import Profile from "../authflow/profile/profile";
-import SubscriptionModal from "../authflow/subscription/subscription.modal";
+import { HeaderNavbar } from "./navbar"
+import { bootcampLogoRedirect } from "@/flows"
+import HeaderLogo from "@/components/app/app"
+import Profile from "../authflow/profile/profile"
+import SubscriptionModal from "../authflow/subscription/subscription.modal"
+import MyLearningTrigger from "./trigger"
 
 export default function Header() {
   return (
@@ -13,6 +14,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Left */}
           <div className="flex items-center gap-6">
+           
             <HeaderLogo url={bootcampLogoRedirect} />
             <HeaderNavbar />
           </div>
@@ -20,7 +22,8 @@ export default function Header() {
           {/* Right */}
           <div className="flex items-center space-x-4">
             <SubscriptionModal />
-            <Profile />
+            <Profile /> 
+            <MyLearningTrigger />
           </div>
         </div>
       </div>

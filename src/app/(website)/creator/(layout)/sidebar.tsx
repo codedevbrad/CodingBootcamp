@@ -1,12 +1,10 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   Sidebar,
-  SidebarContent,
-  SidebarFooter,
+  SidebarContent, 
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,17 +14,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { BookOpen, CheckCircle2, Boxes, Route } from "lucide-react";
-import HeaderLogo from "@/components/app/app";
+} from "@/components/ui/sidebar"
+
+import { BookOpen, CheckCircle2, Boxes, Route } from "lucide-react"
+import HeaderLogo from "@/components/app/app"
 
 const nav = [
-  { label: "Concepts",  href: "/concepts",  icon: BookOpen },
+  { label: "Concepts",   href: "/concepts",   icon: BookOpen },
   { label: "Challenges", href: "/challenges", icon: CheckCircle2 },
-  { label: "Projects",  href: "/projects",  icon: Boxes },
-  { label: "Journeys",  href: "/journeys",  icon: Route, badge: "NEW" },
+  { label: "Projects",   href: "/projects",   icon: Boxes },
+  { label: "Journeys",   href: "/journeys",   icon: Route, badge: "NEW" },
+  { label: "Inspiration", href: "/inspiration" , icon: CheckCircle2 }
 ];
-
 
 
 export function AppSidebar() {
@@ -57,7 +56,7 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild isActive={active}>
-                      <Link href={item.href}>
+                      <Link href={item.href} className="font-sans">
                         <Icon className="mr-2 size-4" />
                         <span className="truncate">{item.label}</span>
                         {item.badge ? (

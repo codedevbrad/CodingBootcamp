@@ -1,0 +1,24 @@
+@tailwind components;
+
+@layer components {
+  /* Node highlight while erasing */
+  .rf-erase-hover {
+    @apply outline outline-2 outline-red-500 
+           rounded-md 
+           shadow-[0_0_0_4px_rgba(239,68,68,0.15),0_0_16px_rgba(239,68,68,0.35)]
+           transition-all duration-75;
+  }
+
+  /* Edge highlight while erasing */
+  .rf-erase-hover-edge path {
+    stroke: theme('colors.red.500') !important;
+    stroke-width: 3 !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 3px rgba(239,68,68,0.6));
+  }
+
+  /* Optional: preview fade before deletion */
+  .rf-to-delete {
+    @apply opacity-35 grayscale transition-opacity duration-150;
+  }
+}
