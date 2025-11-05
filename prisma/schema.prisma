@@ -307,3 +307,16 @@ model Note {
 
   @@index([studentProfileId])
 }
+
+
+model Inspiration {
+  id        String   @id @default(cuid())
+  title     String   // title of the inspiration
+  content   Json     // structured content for the inspiration (e.g. text, images)
+  sourceUrl String?  // optional source of the inspiration
+  tags      String[] @default([]) // e.g. ["motivation", "study", "focus"]
+  type      String?  // e.g. "quote", "tip", "story"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

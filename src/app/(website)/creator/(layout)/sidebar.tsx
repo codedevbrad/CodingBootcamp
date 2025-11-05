@@ -24,7 +24,7 @@ const nav = [
   { label: "Challenges", href: "/challenges", icon: CheckCircle2 },
   { label: "Projects",   href: "/projects",   icon: Boxes },
   { label: "Journeys",   href: "/journeys",   icon: Route, badge: "NEW" },
-  { label: "Inspiration", href: "/inspiration" , icon: CheckCircle2 }
+  { label: "Inspiration", href: "/creator/inspiration" , icon: CheckCircle2 }
 ];
 
 
