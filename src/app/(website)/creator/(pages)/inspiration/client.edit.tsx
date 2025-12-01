@@ -20,7 +20,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { updateInspiration } from "../../db/inspiration";
+import { updateInspiration } from "./db";
 import { Loader2, Pencil, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 

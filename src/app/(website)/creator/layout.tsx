@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import CreatorHeader from "./(layout)/header"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "./(layout)/sidebar"
+import GoBackButton from "./(layout)/goback"
 
 export const metadata: Metadata = {
   title: "Creator - The Code Bootcamp",
@@ -16,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="w-full font-sans"> 
         <CreatorHeader />
         <div className="p-4">
+            <GoBackButton />
             {children}
         </div>
       </main>

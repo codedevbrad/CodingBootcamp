@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, XCircle } from "lucide-react";
+import { ArrowLeft,  XCircle } from "lucide-react";
+import Link from "next/link";
 import { Inspiration } from "@/generated/prisma";
 
 export default function UIInspirationGrid({
@@ -134,7 +135,12 @@ export default function UIInspirationGrid({
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="inset-0 p-6 md:p-12 flex flex-col"
         >
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-8 flex-col">
+            <div>
+               <div className="border px-4 py-2 rounded-sm cursor-pointer">
+                  <Link href={'/platform/create/code'}>Try creating this</Link>
+               </div>
+            </div>
             <button
               onClick={() => setSelected(null)}
               className="p-2 rounded-full hover:bg-muted transition cursor-pointer"

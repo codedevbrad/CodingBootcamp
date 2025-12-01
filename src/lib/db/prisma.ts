@@ -1,17 +1,15 @@
-// Change this line:
-// import { PrismaClient } from "@prisma/client";
+// Correct import — now that you're using the default Prisma client output
+import { PrismaClient } from "@prisma/client";
 
-// To this:
-import { PrismaClient } from "@/generated/prisma";
+const globalForPrisma = global as unknown as {
+  prisma?: PrismaClient;
+};
 
-// Rest of your file stays the same
-const globalForPrisma = global as unknown as { prisma?: PrismaClient };
-
+// Prevent multiple instances in dev (Next.js hot reload)
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    // uncomment for noisy SQL logs in dev
-    // log: ["query", "error", "warn"],
+    // log: ["query", "error", "warn"], // optional
   });
 
 if (process.env.NODE_ENV !== "production") {

@@ -28,3 +28,12 @@ export const getGreetingEmoji = (currentTime: Date | null, isClient: boolean): s
   if (hour < 17) return '☀️';
   return '🌙';
 };
+
+export function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")     // remove special chars
+    .replace(/\s+/g, "-")             // spaces → hyphens
+    .replace(/-+/g, "-");             // collapse duplicates
+}

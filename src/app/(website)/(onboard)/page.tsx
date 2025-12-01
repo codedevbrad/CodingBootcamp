@@ -1,5 +1,6 @@
 'use client'
-import React from 'react'
+import React from 'react' 
+import ScrollBootcampFeature from './(landing)/scrollImage/scrollFeature'
 
 export default function CodeBootcampHero() {
   return (
@@ -90,6 +91,54 @@ export default function CodeBootcampHero() {
       <div className="pointer-events-none absolute top-1/4 left-1/4 w-16 h-16 bg-white/20 rounded-full animate-pulse"></div>
       <div className="pointer-events-none absolute top-1/3 right-1/4 w-8 h-8 bg-white/30 rounded-full animate-bounce"></div>
       <div className="pointer-events-none absolute bottom-1/4 left-1/3 w-12 h-12 bg-white/25 rounded-full animate-pulse"></div>
-    </div>
+
+      <div className='bg-white w-full h-full pb-[100px]'>
+
+          <div className="flex justify-center">
+              <h1 className=' text-6xl font-bold pt-[100px] text-center'> 
+                Learning broken down <br/> into its core essientials 
+              </h1>
+          </div>
+          
+
+          <ScrollBootcampFeature
+            initialImage="https://cdn.prod.website-files.com/689eeab877a57e90992371a5/689f5591ac284153db159d83_3ba37733e16b8e65d088c1ca0d83111b_Make%20it%20your%20own-p-1080.png"
+                  sections={[
+                    {
+                      id: "concepts",
+                      title: "Concepts",
+                      subtitle: "Clear explanations of every topic you’ll learn.",
+                      paragraph: "We break down complex ideas into simple, visual learning blocks.",
+                      image:
+                        "https://cdn.prod.website-files.com/689eeab877a57e90992371a5/689f5591bd69eb9fd2062fea_dd58439328581aeee065a22662f4dbf1_Prototype%20ideas.png",
+                    },
+                    {
+                      id: "challenges",
+                      title: "Challenges",
+                      subtitle: "Learn by solving coding tasks with instant grading.",
+                      paragraph: "A fully automated grading system checks your answers in seconds.",
+                      image:
+                        "https://cdn.prod.website-files.com/689eeab877a57e90992371a5/689f5591ac284153db159d83_3ba37733e16b8e65d088c1ca0d83111b_Make%20it%20your%20own-p-1080.png",
+                    },
+                    {
+                      id: "projects",
+                      title: "Projects",
+                      subtitle: "Build real apps with guidance and structure.",
+                      paragraph: "Each project includes steps, diagrams, tasks, and example code.",
+                      image:
+                        "https://cdn.prod.website-files.com/689eeab877a57e90992371a5/68d912e41ada6ea065ca71bc_b5ce0347fabebcaf26aec9b3b63de53b_Write%20specs-p-1080.png",
+                    },
+                    {
+                      id: "journeys",
+                      title: "Journeys",
+                      subtitle: "Progress step-by-step with guided learning paths.",
+                      paragraph: "Journeys keep you focused — everything unlocks in order.",
+                      image:
+                        "https://cdn.prod.website-files.com/689eeab877a57e90992371a5/68d9ae05bf62d47f3584d9e7_Export%20to%20MCP-p-1080.png",
+                    },
+                  ]}
+                />
+          </div>
+      </div>
   )
 }

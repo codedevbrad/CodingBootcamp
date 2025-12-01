@@ -17,7 +17,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { createInspiration } from "../../db/inspiration";
+import { createInspiration } from "./db";
 import { Loader2, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 

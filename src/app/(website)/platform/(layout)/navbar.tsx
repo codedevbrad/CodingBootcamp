@@ -24,8 +24,8 @@ const sections = {
     icon: PlusCircle,
     links: [
       { title: "Create a Diagram", href: "/platform/create/diagram" },
-      { title: "ask and solve", href: "/platform/create/ask" },
-      { title: "Build a project", href: "/platform/create/project" }
+      { title: "Coding Editor",       href: "/platform/create/code" },
+      { title: "Build a project",  href: "/platform/create/project" }
     ],
   },
   concepts: {
@@ -39,6 +39,19 @@ const sections = {
       { title: "All Concepts", href: "/concepts" },
       { title: "JavaScript", href: "/concepts/javascript" },
       { title: "React", href: "/concepts/react" },
+    ],
+  }, 
+  challenges: {
+    title: "Challenges",
+    description:
+      "Sharpen your skills with coding puzzles and real-time grading.",
+    href: "/platform/challenges",
+    color: "from-orange-500/10 to-pink-500/10",
+    icon: Rocket,
+    links: [
+      { title: "Daily Challenges", href: "/challenges/daily" },
+      { title: "React Challenges", href: "/challenges/react" },
+      { title: "Algorithm Drills", href: "/challenges/algorithms" },
     ],
   },
   projects: {
@@ -54,19 +67,7 @@ const sections = {
       { title: "Intermediate", href: "/projects/intermediate" },
     ],
   },
-  challenges: {
-    title: "Challenges",
-    description:
-      "Sharpen your skills with coding puzzles and real-time grading.",
-    href: "/platform/challenges",
-    color: "from-orange-500/10 to-pink-500/10",
-    icon: Rocket,
-    links: [
-      { title: "Daily Challenges", href: "/challenges/daily" },
-      { title: "React Challenges", href: "/challenges/react" },
-      { title: "Algorithm Drills", href: "/challenges/algorithms" },
-    ],
-  },
+ 
   journeys: {
     title: "Journeys",
     description:

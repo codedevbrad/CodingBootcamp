@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { useTextStateWithCatches , CharacterCountDisplay , LimitWarning } from "@/lib/helpers/useCharacterCount"
+import { useTextStateWithCatches , CharacterCountDisplay , LimitWarning } from "@/components/custom/characterCount"
 
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {

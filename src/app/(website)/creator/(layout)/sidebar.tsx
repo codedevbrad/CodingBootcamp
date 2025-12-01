@@ -20,11 +20,12 @@ import { BookOpen, CheckCircle2, Boxes, Route } from "lucide-react"
 import HeaderLogo from "@/components/app/app"
 
 const nav = [
-  { label: "Concepts",   href: "/concepts",   icon: BookOpen },
-  { label: "Challenges", href: "/challenges", icon: CheckCircle2 },
-  { label: "Projects",   href: "/projects",   icon: Boxes },
-  { label: "Journeys",   href: "/journeys",   icon: Route, badge: "NEW" },
-  { label: "Inspiration", href: "/creator/inspiration" , icon: CheckCircle2 }
+  { label: "Concepts",    href: "/creator/concepts",   icon: BookOpen },
+  { label: "Challenges",  href: "/creator/challenges", icon: CheckCircle2 },
+  { label: "Projects",    href: "/creator/projects",   icon: Boxes },
+  { label: "Journeys",    href: "/creator/journeys",   icon: Route, badge: "NEW" },
+  { label: "Inspiration", href: "/creator/inspiration" , icon: CheckCircle2 },
+  { label: "Blocks",      href: "/creator/blocks",     icon: BookOpen },
 ];
 
 

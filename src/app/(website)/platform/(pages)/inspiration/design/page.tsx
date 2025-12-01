@@ -1,6 +1,6 @@
 "use server"
 
-import { getUIInspirations } from "../../../db/inspiration";
+import { getUIInspirations } from "./db";
 import UIInspirationGrid from "./client.list";
 
 export default async function UIInspirationPage() {

@@ -15,7 +15,7 @@ import {
   purchaseTutoredAction,
   getTutorsAction,
   getMySubscriptionAction,
-} from "@/lib/db/models/subscription/db.student.queries"
+} from "@/lib/auth/subscription/db.student.queries"
 
 type PlanKey = keyof typeof plans
 

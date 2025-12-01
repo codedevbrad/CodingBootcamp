@@ -1,12 +1,7 @@
-import { getInspirations, deleteInspiration } from "../../db/inspiration";
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+import { getInspirations, deleteInspiration } from "./db"
+import { Button } from "@/components/ui/button"
+import { Trash } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 import InspirationEdit from "./client.edit";
 
