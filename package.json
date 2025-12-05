@@ -16,6 +16,9 @@
     "db:push": "npx prisma db push",
     "db:reset": "npx prisma migrate reset",
     "db:view": "npx prisma studio",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev",
+    
     "test": "jest",
     "tests:dummy": "npm test dummy.test.ts",
     "scrub:students": "npx tsx src/scripts/db/student/students.scrub.ts",

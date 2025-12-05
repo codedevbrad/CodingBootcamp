@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useTutorStore, type TutorProfileDTO } from "../../store/useTutorStore";
+import { useTutorStore, type TutorProfileDTO } from "../../../../store/useExampleStore";
 
 /**
  * Pushes server-fetched tutor data into the client store exactly once.

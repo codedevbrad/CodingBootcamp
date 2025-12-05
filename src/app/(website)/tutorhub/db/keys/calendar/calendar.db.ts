@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
-import { getCurrentUserId } from '@/lib/auth/auth';
+import { getCurrentUserId } from '@/app/auth/db/db.student/db.student';
 
 // ✅ Use node:crypto and the modern APIs
 import {

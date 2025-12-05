@@ -94,6 +94,17 @@ model User {
 }
 
 
+model AdminProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  permissions String[] // Admin permissions
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model TutorProfile {
   id         String   @id @default(cuid())
   userId     String   @unique
@@ -111,32 +122,36 @@ model TutorProfile {
 }
 
 
+enum StudentLevel {
+  BEGINNER 
+  INTERMEDIATE 
+  EXPERT
+}
+
+
+
 model StudentProfile {
   id     String @id @default(cuid())
   userId String @unique
 
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscriptions    Subscription[]
+  subscriptions    Subscription?
 
   tutorAssignments TutorAssignment[]
 
   notes            Note[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-model AdminProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  permissions String[] // Admin permissions
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level    StudentLevel   @default(BEGINNER)
+  bio      String         @default("")
+  countryCode String      @default("") // e.g. "US", "GB", "DE"
+  skills   String[]       @default([])
+  goals    String         @default("")
+  streak   Int            @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 
 enum SubscriptionTier {
@@ -158,16 +173,13 @@ model Subscription {
   id String @id @default(cuid())
 
   // who
-  studentProfileId String
-  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  studentProfileId String @unique
+  studentProfile   StudentProfile? @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
 
   // what
   tier   SubscriptionTier
   status SubscriptionStatus @default(PENDING)
 
-  // period
-  startDate DateTime  @default(now())
-  endDate   DateTime? // optional for FREE/PENDING; set for annual, etc.
 
   // back relation to TutorAssignment (one-to-one from assignment's unique subscriptionId)
   tutorAssignment TutorAssignment?
@@ -176,8 +188,7 @@ model Subscription {
   updatedAt DateTime @updatedAt
 
   @@index([studentProfileId])
-  @@index([status])
-  @@index([endDate])
+  @@index([status]) 
 }
 
 

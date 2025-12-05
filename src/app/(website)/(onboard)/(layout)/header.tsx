@@ -48,7 +48,7 @@ export default async function Header() {
           ) : (
              null
           )}
-          <Link href={`/auth/rolecheck`}>
+          <Link href={`/platform`}>
               <Button> Go to Platform </Button>
           </Link>
 

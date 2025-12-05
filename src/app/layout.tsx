@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { Providers } from "../lib/auth/auth.provider"
+import { Providers } from "./auth/auth.provider"
 import { ThemeProvider } from "./themeProvider"
 import LoadingBar from "@/components/app/loading/loadingBar"
 

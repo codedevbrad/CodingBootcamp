@@ -3,7 +3,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
-import { TutorProfileDTO } from "../../store/useTutorStore";
+import { TutorProfileDTO } from "../../../../store/useExampleStore";
 
 
 export async function getTutorProfile(): Promise<TutorProfileDTO> {

@@ -16,9 +16,12 @@ import {
 import type {
   animatedCodeChallengeBlock,
   Step,
-  CodeLine,
-  AppendType,
+  CodeLine, 
 } from "./package.types";
+
+import AnimatedCodeChallengev1 from ".";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 export default function AnimatedCodeChallengeEditor({
   initialData,
@@ -127,48 +130,74 @@ export default function AnimatedCodeChallengeEditor({
         <Button onClick={() => onSave(block)}>Save Challenge</Button>
       </div>
 
-      {/* TITLE */}
-      <Card className="p-4">
-        <Input
-          value={block.title}
-          onChange={(e) => setBlock({ ...block, title: e.target.value })}
-          placeholder="Challenge title"
-          className="text-lg font-semibold"
-        />
-      </Card>
+  
 
-      {/* SUMMARY */}
-      <Card className="p-4">
-        <Textarea
-          value={block.summary || ""}
-          onChange={(e) => setBlock({ ...block, summary: e.target.value })}
-          placeholder="Summary after finishing..."
-          rows={3}
-        />
-      </Card>
+      <Collapsible defaultOpen>
+        <Card className="flex flex-col gap-4 p-4">
+          {/* COLLAPSIBLE HEADER */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold">Challenge Details</h2>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="bg-gray-100">
+                Toggle Challenge Details 
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </CollapsibleTrigger>
+          </div>
 
-      {/* CODE TYPE */}
-      <Card className="p-4">
-        <div className="font-semibold mb-2">Code Type</div>
-        <Select
-          value={block.data.codeType}
-          onValueChange={(v) =>
-            setBlock({
-              ...block,
-              data: { ...block.data, codeType: v as "js" | "jsx" },
-            })
-          }
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="js">JavaScript</SelectItem>
-            <SelectItem value="jsx">JSX</SelectItem>
-          </SelectContent>
-        </Select>
-      </Card>
+          <CollapsibleContent className="space-y-4 pt-2">
+            <div className="flex flex-row gap-2">
+              {/* TITLE */}
+              <Card className="p-4 flex-1">
+                <Input
+                  value={block.title}
+                  onChange={(e) => setBlock({ ...block, title: e.target.value })}
+                  placeholder="Challenge title"
+                  className="text-lg font-semibold"
+                />
+              </Card>
 
+              {/* CODE TYPE */}
+              <Card className="p-4 w-36">
+                <div className="font-semibold mb-2">Code Type</div>
+                <Select
+                  value={block.data.codeType}
+                  onValueChange={(v) =>
+                    setBlock({
+                      ...block,
+                      data: { ...block.data, codeType: v as "js" | "jsx" },
+                    })
+                  }
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="js">JavaScript</SelectItem>
+                    <SelectItem value="jsx">JSX</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Card>
+            </div>
+
+            {/* SUMMARY */}
+            <Card className="p-4">
+              <h2 className="text-lg font-semibold">Summary</h2>
+              <Textarea
+                value={block.summary || ""}
+                onChange={(e) => setBlock({ ...block, summary: e.target.value })}
+                placeholder="Summary after finishing..."
+                rows={3}
+              />
+            </Card>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+      
+
+
+      
+    
       {/* STEP NAVIGATION */}
-      <Card className="p-4 flex justify-between items-center bg-gray-100">
+      <Card className="p-4 flex justify-center items-center bg-gray-100 flex-row">
         <Button variant="outline" disabled={index === 0} onClick={() => setIndex(i => i - 1)}>
           Previous
         </Button>
@@ -183,19 +212,28 @@ export default function AnimatedCodeChallengeEditor({
           onClick={() => setIndex(i => i + 1)}
         >
           Next
-        </Button>
+        </Button>     
+        <div className="flex justify-center">
+          <Button onClick={addStep}>+ Add Step</Button>
+        </div>
       </Card>
 
-      <div className="flex justify-center">
-        <Button onClick={addStep}>+ Add Step</Button>
-      </div>
+
 
       {/* STEP EDITOR */}
       <Card className="p-4 space-y-6 border-2 border-black/10">
+ 
+        <AnimatedCodeChallengev1
+          {...block}
+          adminPreview={{ step: index }}
+        />
 
         {/* APPEND TYPE */}
         <div className="space-y-2">
           <div className="font-semibold">Append Type</div>
+          <p className="text-xs text-gray-500">
+            Choose whether this step adds brand new code or edits code from a previous step.
+          </p>
 
           <Select
             value={current.appendType.type}
@@ -235,6 +273,9 @@ export default function AnimatedCodeChallengeEditor({
         {/* QUESTION */}
         <div className="space-y-2">
           <div className="font-semibold">Question</div>
+          <p className="text-xs text-gray-500">
+            This is the prompt learners will answer for this step.
+          </p>
           <Input
             value={current.interactive.question}
             onChange={(e) => updateInteractive("question", e.target.value)}
@@ -244,6 +285,9 @@ export default function AnimatedCodeChallengeEditor({
         {/* OPTIONS */}
         <div className="space-y-2">
           <div className="font-semibold">Options</div>
+          <p className="text-xs text-gray-500">
+            Provide multiple-choice answers. Mark exactly one as the correct option.
+          </p>
 
           {current.interactive.options.map((opt, idx) => (
             <div key={idx} className="flex items-center gap-2">
@@ -271,53 +315,88 @@ export default function AnimatedCodeChallengeEditor({
         {/* CODE LINES */}
         <div className="space-y-4">
           <div className="font-semibold">Code Lines</div>
+          <p className="text-xs text-gray-500">
+            Each row represents one logical line or block of code. Control indentation and newlines per row.
+          </p>
 
           {current.code.map((line, idx) => (
-            <Card key={idx} className="p-4 space-y-2 border border-gray-200">
-              <Input
-                value={line.content}
-                onChange={(e) => updateCodeLine(idx, "content", e.target.value)}
-                placeholder="Code content..."
-              />
+            <Card key={idx} className="p-3 border border-gray-200">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+                {/* MAIN CODE CONTENT */}
+                <div className="flex-1">
+                  <Input
+                    value={line.content}
+                    onChange={(e) => updateCodeLine(idx, "content", e.target.value)}
+                    placeholder="Code content..."
+                  />
+                </div>
 
-              <Input
-                type="number"
-                value={line.indent}
-                onChange={(e) => updateCodeLine(idx, "indent", Number(e.target.value))}
-                placeholder="Indent level"
-              />
+                {/* INDENT LEVEL */}
+                <div className="flex items-center gap-1 w-[110px]">
+                  <span className="text-[10px] uppercase tracking-wide text-gray-500">
+                    Indent
+                  </span>
+                  <Input
+                    type="number"
+                    value={line.indent}
+                    onChange={(e) => updateCodeLine(idx, "indent", Number(e.target.value))}
+                    placeholder="0"
+                    className="h-8"
+                  />
+                </div>
 
-              {/* newline */}
-              <Select
-                value={typeof line.newLine === "boolean" ? (line.newLine ? "true" : "false") : "object"}
-                onValueChange={(val) => {
-                  if (val === "false") {
-                    updateCodeLine(idx, "newLine", false);
-                  } else if (val === "true") {
-                    updateCodeLine(idx, "newLine", { state: true, by: 1 });
-                  }
-                }}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="false">No New Line</SelectItem>
-                  <SelectItem value="true">New Line (1)</SelectItem>
-                </SelectContent>
-              </Select>
+                {/* NEWLINE CONTROL */}
+                <div className="flex items-center gap-1 w-[150px]">
+                  <span className="text-[10px] uppercase tracking-wide text-gray-500">
+                    Newline
+                  </span>
+                  <Select
+                    value={
+                      typeof line.newLine === "boolean"
+                        ? line.newLine
+                          ? "true"
+                          : "false"
+                        : "object"
+                    }
+                    onValueChange={(val) => {
+                      if (val === "false") {
+                        updateCodeLine(idx, "newLine", false);
+                      } else if (val === "true") {
+                        updateCodeLine(idx, "newLine", { state: true, by: 1 });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="false">None</SelectItem>
+                      <SelectItem value="true">Before line</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {typeof line.newLine === "object" && (
-                <Input
-                  type="number"
-                  value={line.newLine.by}
-                  onChange={(e) =>
-                    updateCodeLine(idx, "newLine", {
-                      state: true,
-                      by: Number(e.target.value),
-                    })
-                  }
-                  placeholder="New line count"
-                />
-              )}
+                {/* NEWLINE COUNT (ONLY WHEN ACTIVE) */}
+                {typeof line.newLine === "object" && (
+                  <div className="flex items-center gap-1 w-[120px]">
+                    <span className="text-[10px] uppercase tracking-wide text-gray-500">
+                      Count
+                    </span>
+                    <Input
+                      type="number"
+                      value={line.newLine.by}
+                      onChange={(e) =>
+                        updateCodeLine(idx, "newLine", {
+                          state: true,
+                          by: Number(e.target.value),
+                        })
+                      }
+                      placeholder="1"
+                      className="h-8"
+                    />
+                  </div>
+                )}
+              </div>
             </Card>
           ))}
 

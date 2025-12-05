@@ -22,7 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getInitials } from '../../utils'
 
 import { APIKeysModal } from '../../db/keys/keyDisplay'
-import { useTutorStore } from '../../store/useTutorStore'
+import { useTutorStore } from '../../../../store/useExampleStore'
 
 
 export default function ProfileDropdown() {

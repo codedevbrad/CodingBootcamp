@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Calendar, Users, TrendingUp, Settings, DollarSign, BarChart3 } from 'lucide-react' 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import { useTutorStore } from '../../store/useTutorStore'
+import { useTutorStore } from '../../../../store/useExampleStore'
 
 import OverviewTab from './dash.overview'
 import ProfileTab from './dash.profiletab'
