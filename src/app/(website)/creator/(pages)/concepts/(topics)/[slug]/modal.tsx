@@ -21,8 +21,8 @@ import {
   deleteTopic,
 } from "../../db";
 
-import { useLanguages }  from "@/app/(website)/creator/hooks/useLanguages/useLanguages";
-import { useCategories } from "@/app/(website)/creator/hooks/useCategories/useCategories";
+import { useLanguages }  from "@/app/models/db.languages/useLanguages";
+import { useCategories } from "@/app/models/db.categories/useCategories";
 
 function slugify(str: string) {
   return str

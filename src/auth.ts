@@ -6,9 +6,8 @@ import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db/prisma"
-import { UserRole, SubscriptionTier, StudentProfile } from "./generated/prisma"
-import { CreateNewStudent } from "./app/auth/db/db.student/dbstudent.creation"
-import { StudentLevel } from "@prisma/client"
+import { UserRole, SubscriptionTier } from "@prisma/client"
+import { CreateNewStudent } from "@/app/models/db.student/db.student.creation"
 
 export type UserInSession = {
     id: string;
@@ -19,37 +18,6 @@ export type UserInSession = {
     subscriptionTier?: SubscriptionTier | null;
 }
 
-// User including the attached student profile relation
-export type StudentWithProfile = UserInSession & {
-  studentProfile: StudentProfile | null
-}
-
-// Helper function to map StudentLevel enum to display string
-export function mapStudentLevelToDisplay(level: StudentLevel ) {
-  switch (level) {
-    case "BEGINNER":
-      return "Beginner"
-    case "INTERMEDIATE":
-      return "Intermediate"
-    case "EXPERT":
-      return "Advanced"
-    default:
-      return "Beginner"
-  }
-}
-
-// Minimal shape used by the "My profile" UI
-export type StudentProfileSummary = {
-  name: string | null
-  role: UserRole | null
-  joined: Date | null
-  level: "Beginner" | "Intermediate" | "Advanced"
-  bio: string
-  location: string
-  skills: string[]
-  goals: string
-  streak: number
-}
 
 declare module "next-auth" {
   export interface Session {

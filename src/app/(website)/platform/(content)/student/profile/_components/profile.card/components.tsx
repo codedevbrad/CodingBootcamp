@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion"
 import type { StudentProfileSummary } from "@/auth"
+import { Edit } from "lucide-react"
+import Link from "next/link"
 
 type Props = {
   student: StudentProfileSummary
@@ -10,6 +12,7 @@ type Props = {
 const PlaceholderText = ({ children }: { children: React.ReactNode }) => (
   <span className="text-gray-400 italic text-sm">{children}</span>
 )
+
 
 export default function StudentFullProfileClient({ student }: Props) {
   const hasName = student.name && student.name.trim() !== ""
@@ -25,7 +28,14 @@ export default function StudentFullProfileClient({ student }: Props) {
       transition={{ duration: 0.5 }}
       className="mt-10 rounded-2xl border border-slate-200 bg-gradient-to-br from-fuchsia-50/70 to-rose-50/70 p-6 md:p-8"
     >
+      <div className="flex justify-end mb-1">
+           <Link href="/platform/student/profile/edit" className="">
+              <Edit className="h-6 w-6 text-gray-400 hover:text-gray-600 cursor-pointer" />
+           </Link>
+      </div>
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        
         <div className="space-y-2 max-w-3xl">
           <h2 className="text-2xl font-semibold text-gray-800">
             {hasName ? (
