@@ -7,7 +7,7 @@ import { plans } from "../plans";
 import { PlanCard } from "./components/c.plancard";
 import { PurchaseControls } from "./components/c.purchaseControls";
 
-import { useCurrentUserState } from "@/app/auth/session/auth.client.getUser";
+import { useCurrentUserState } from "@/app/(website)/platform/session/auth.client.getUser";
 
 import {
   startFreeTierAction,

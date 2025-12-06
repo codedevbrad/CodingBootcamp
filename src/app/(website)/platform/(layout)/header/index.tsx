@@ -1,5 +1,5 @@
 import { HeaderNavbar } from "./_parts/navbar"
-import { bootcampLogoRedirect } from "@/flows"
+import { bootcampLogoRedirect } from "@/lib/constants/constant.flows"
 
 import HeaderLogo from "@/components/app/app"
 import Profile from "@/app/(website)/platform/(content)/student/profile/_components/profile.server.dropdown"

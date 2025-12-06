@@ -16,13 +16,13 @@ import { UserAvatar } from "./_components/userAvatar"
 import GuestProfile from "@/app/(website)/platform/(content)/guest/_components/guest.profile"
 import SignOutButton from "./_components/signout"
 
-import { getUser } from "@/app/auth/session/auth.server.getUser"
+import { getUser } from "@/app/(website)/platform/session/auth.server.getUser"
 
 import CurrentSubscriptionTier from "@/app/(website)/platform/(content)/student/subscription/_components/subscription.tier"
 
 import ProfileLink from "./_components/profileLink"
 import SubscriptionLink from "./_components/subscriptionLink"
-import RenderBasedOnUserType from "@/app/auth/renderSwitch/server.renderswitch"
+import RenderBasedOnUserType from "@/app/(website)/platform/session/renderSwitch/server.renderswitch"
 
 
 async function ProfileMenuStudent( ) {

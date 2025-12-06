@@ -1,7 +1,7 @@
 "use client"
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { useCurrentUserState , getUserInitials } from "@/app/auth/session/auth.client.getUser"
+import { useCurrentUserState , getUserInitials } from "@/app/(website)/platform/session/auth.client.getUser"
 import GuestProfile from "@/app/(website)/platform/(content)/guest/_components/guest.profile"
 
 export default function ProfileDisplayed() {

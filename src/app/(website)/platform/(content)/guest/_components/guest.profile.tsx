@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CustomButton } from "@/components/custom/buttons/button";
 import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
-import { bootcampLoginRedirect } from "@/flows";
+import { bootcampLoginRedirect } from "@/lib/constants/constant.flows";
 
 
 export default function GuestProfileDropdown() {

@@ -1,4 +1,4 @@
-import { getStudentWithProfile } from "@/app/auth/db/db.student/db.student"
+import { getStudentWithProfile } from "@/app/(website)/platform/db/db.student/db.student";
 import StudentFullProfileClient from "./components"
 
 

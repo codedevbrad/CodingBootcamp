@@ -2,28 +2,31 @@
 // auth.ts
 
 import NextAuth from "next-auth"
-import GitHub from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db/prisma"
 import { UserRole, SubscriptionTier } from "@prisma/client"
-import { CreateNewStudent } from "@/app/models/db.student/db.student.creation"
+import { CreateNewStudent } from "./app/(website)/platform/db/db.student/db.student.creation"
+import { authProviders } from "./app/auth/providers"
 
-export type UserInSession = {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: UserRole;
-    subscriptionTier?: SubscriptionTier | null;
+export type UserBasicSession = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: UserRole;
 }
 
+export type UserWithStudentProfileSession = UserBasicSession & {
+  subscriptionTier?: SubscriptionTier | null;
+}
+
+export type UserWithSession = UserBasicSession | UserWithStudentProfileSession;
 
 declare module "next-auth" {
   export interface Session {
     provider?: string;
     accessToken?: string;
-    user: UserInSession;
+    user: UserWithSession;
   }
 }
 
@@ -56,93 +59,77 @@ export const {
   pages: {
     signIn: '/auth/login'
   },
-  providers: [
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID!,
-      clientSecret: process.env.AUTH_GITHUB_SECRET!,
-      authorization: {
-        params: {
-          // GitHub doesn't support account picker, but this will re-ask consent
-          prompt: "consent",
-        },
-      },
-    }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-      authorization: {
-        params: {
-          // Always show Google account chooser
-          prompt: "select_account",
-          response_type: "code",
-          access_type: "offline",
-        },
-      },
-      // scopes: ["openid", "email", "profile"], // optional (defaults are fine)
-    }),
-  ],
-// auth.ts
-callbacks: {
-  async jwt({ token, user, account }) {
-    // 🔁 Always resolve a user id (first login: user.id, later: token.sub)
-    const userId = user?.id ?? token.sub;
+  providers: authProviders,
+  callbacks: {
+    async jwt({ token, user, account }) {
+      // 🔁 Always resolve a user id (first login: user.id, later: token.sub)
+      const userId = user?.id ?? token.sub;
 
-    try {
-      if (userId) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: userId },
-          select: { 
-            role: true,
-            studentProfile: {
-              select: {
-                subscriptions: {
-                  select: { tier: true, status: true },
+      try {
+        if (userId) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { 
+              role: true,
+              studentProfile: {
+                select: {
+                  subscriptions: {
+                    select: { tier: true, status: true },
+                  },
                 },
-              },
+              }
             },
-          },
-        });
+          });
 
-        // Keep role in sync with DB; fall back to existing token role or STUDENT
-        token.role = dbUser?.role ?? (token.role as UserRole) ?? UserRole.STUDENT;
-        
-        // Sync subscription tier for students (only if ACTIVE)
-        if (dbUser?.role === UserRole.STUDENT) {
-          const subscription = dbUser.studentProfile?.subscriptions;
-          token.subscriptionTier = (subscription?.status === "ACTIVE") ? subscription.tier : null;
+          // Keep role in sync with DB; fall back to existing token role or STUDENT
+          token.role = dbUser?.role ?? (token.role as UserRole) ?? UserRole.STUDENT;
+          
+          // Sync subscription tier for students (only if ACTIVE)
+          if (dbUser?.role === UserRole.STUDENT) {
+            const subscription = dbUser.studentProfile?.subscriptions;
+            token.subscriptionTier = (subscription?.status === "ACTIVE") ? subscription.tier : null;
+          } 
+          else {
+            token.subscriptionTier = null;
+          }
+          
         } else {
+          // No user yet (should be rare) – ensure a sane default
+          token.role = (token.role as UserRole) ?? UserRole.STUDENT;
           token.subscriptionTier = null;
         }
-      } else {
-        // No user yet (should be rare) – ensure a sane default
+      } catch (err) {
+
+        console.error("🎫 JWT role/subscription refresh failed:", err);
+        // Don’t break auth if DB is down; keep previous or default
         token.role = (token.role as UserRole) ?? UserRole.STUDENT;
-        token.subscriptionTier = null;
+        token.subscriptionTier = token.subscriptionTier ?? null;
       }
-    } catch (err) {
-      console.error("🎫 JWT role/subscription refresh failed:", err);
-      // Don’t break auth if DB is down; keep previous or default
-      token.role = (token.role as UserRole) ?? UserRole.STUDENT;
-      token.subscriptionTier = token.subscriptionTier ?? null;
-    }
 
-    // Provider metadata (first login or when account rotates)
-    if (account) {
-      token.provider = account.provider;
-      if (account.access_token) token.accessToken = account.access_token;
-    }
+      // Provider metadata (first login or when account rotates)
+      if (account) {
+        token.provider = account.provider;
+        if (account.access_token) token.accessToken = account.access_token;
+      }
 
-    return token;
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.provider = token.provider as string | undefined;
+      session.accessToken = token.accessToken as string | undefined;
+
+      session.user.id = token.sub!;
+      session.user.role = token.role as UserRole | undefined;
+      
+      if (session.user.role === UserRole.STUDENT) {
+          session.user.subscriptionTier = token.subscriptionTier as SubscriptionTier | null | undefined;
+      }
+
+      console.log("🔧 Session: ", session);
+      return session;
+    },
   },
-
-  async session({ session, token }) {
-    session.provider = token.provider as string | undefined;
-    session.accessToken = token.accessToken as string | undefined;
-    session.user.id = token.sub!;
-    session.user.role = token.role as UserRole | undefined;
-    session.user.subscriptionTier = token.subscriptionTier as SubscriptionTier | null | undefined;
-    return session;
-  },
-},
   events: {
     async signIn(message) {
       console.log("📧 Event: signIn", JSON.stringify(message, null, 2));

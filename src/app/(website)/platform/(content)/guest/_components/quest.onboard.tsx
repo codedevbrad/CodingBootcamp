@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"; 
 import { CustomButton } from "@/components/custom/buttons/button";
 
-import { bootcampLoginRedirect } from "@/flows";
+import { bootcampLoginRedirect } from "@/lib/constants/constant.flows";
 
 export default function GuestOnboarding() {
   const { status } = useSession();

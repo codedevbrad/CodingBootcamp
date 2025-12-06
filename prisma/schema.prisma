@@ -66,7 +66,6 @@ model ServiceKey {
 
 
 
-
 enum UserRole {
   ADMIN
   TUTOR
@@ -153,9 +152,7 @@ model StudentProfile {
 }
 
 
-
 enum SubscriptionTier {
-  FREE
   BASIC
   TUTORED
 }
@@ -177,8 +174,8 @@ model Subscription {
   studentProfile   StudentProfile? @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
 
   // what
-  tier   SubscriptionTier
-  status SubscriptionStatus @default(PENDING)
+  tier   SubscriptionTier   @default(BASIC)
+  status SubscriptionStatus @default(ACTIVE)
 
 
   // back relation to TutorAssignment (one-to-one from assignment's unique subscriptionId)
