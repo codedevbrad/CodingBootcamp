@@ -3,7 +3,7 @@
 import GreetingToStudent from "@/app/(website)/platform/lib/personalisation/greeting"
 import KeepGoing from "@/app/(website)/platform/lib/navigation/keepGoing"
 import StudentActivity from "../engagement/student.activity"
-import StudentFullProfile from "../profile/_components/profile.card/student.profile"
+import StudentFullProfile from "../../../../../features/user/student/_components/profile/profile.card/student.profile"
 import StudentSummary from "../engagement/student.summary"
 
 export default async function StudentPage() {

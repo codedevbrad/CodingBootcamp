@@ -104,6 +104,7 @@ model AdminProfile {
   updatedAt DateTime @updatedAt
 }
 
+
 model TutorProfile {
   id         String   @id @default(cuid())
   userId     String   @unique
@@ -112,7 +113,7 @@ model TutorProfile {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  tutorAssignments TutorAssignment[]
+  tutorSubscriptions TutorSubscription[]
 
   availability Json? // e.g. { "monday": ["10:00", "14:00"], "tuesday": ["09:00", "13:00"] }
 
@@ -132,11 +133,10 @@ enum StudentLevel {
 model StudentProfile {
   id     String @id @default(cuid())
   userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscriptions    Subscription?
-
-  tutorAssignments TutorAssignment[]
+  tutorSubscriptions TutorSubscription[]
+  moduleSubscriptions ModuleSubscription[]
 
   notes            Note[]
 
@@ -152,57 +152,31 @@ model StudentProfile {
 }
 
 
-enum SubscriptionTier {
-  BASIC
-  TUTORED
+model ModuleSubscription {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  module     ModuleType 
+  expiresAt  DateTime? // null = permanent
+  createdAt  DateTime @default(now())
+
+  @@index([studentId])
 }
 
 
-enum SubscriptionStatus {
-  ACTIVE
-  EXPIRED
-  CANCELLED
-  PENDING
+enum ModuleType {
+  CREATING
+  TOPICS
+  CHALLENGES
+  COHORTS
+  JOURNEYS
+  MODULE_HOMEWORK
 }
 
 
-model Subscription {
+
+model TutorSubscription {
   id String @id @default(cuid())
-
-  // who
-  studentProfileId String @unique
-  studentProfile   StudentProfile? @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
-
-  // what
-  tier   SubscriptionTier   @default(BASIC)
-  status SubscriptionStatus @default(ACTIVE)
-
-
-  // back relation to TutorAssignment (one-to-one from assignment's unique subscriptionId)
-  tutorAssignment TutorAssignment?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([studentProfileId])
-  @@index([status]) 
-}
-
-
-
-enum AssignmentStatus {
-  ACTIVE
-  PAUSED
-  COMPLETED
-  CANCELLED
-}
-
-
-model TutorAssignment {
-  id String @id @default(cuid())
-
-  subscriptionId String       @unique
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   tutorProfileId String
   tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade) // 👈 add
@@ -213,7 +187,6 @@ model TutorAssignment {
   homework   Homework[]
   sessions   TutoringSession[]
 
-  status     AssignmentStatus @default(ACTIVE)
   assignedAt DateTime         @default(now())
   endedAt    DateTime?
 
@@ -239,8 +212,8 @@ model TutoringSession {
   description String?
 
   // who
-  tutorAssignmentId String
-  tutorAssignment   TutorAssignment @relation(fields: [tutorAssignmentId], references: [id], onDelete: Cascade)
+  tutorSubscriptionId String
+  tutorSubscription   TutorSubscription @relation(fields: [tutorSubscriptionId], references: [id], onDelete: Cascade)
 
   // when
   startTime  DateTime
@@ -271,8 +244,8 @@ model Homework {
   description String?
 
   // 👇 the single relation you care about
-  tutorAssignmentId String
-  tutorAssignment   TutorAssignment @relation(fields: [tutorAssignmentId], references: [id], onDelete: Cascade)
+  tutorSubscriptionId String
+  tutorSubscription   TutorSubscription @relation(fields: [tutorSubscriptionId], references: [id], onDelete: Cascade)
 
   // store your structured homework content
   tasks Json
@@ -291,7 +264,7 @@ model Homework {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([tutorAssignmentId])
+  @@index([tutorSubscriptionId])
   @@index([status])
   @@index([dueDate])
 }

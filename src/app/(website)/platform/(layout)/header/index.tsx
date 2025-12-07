@@ -2,7 +2,7 @@ import { HeaderNavbar } from "./_parts/navbar"
 import { bootcampLogoRedirect } from "@/lib/constants/constant.flows"
 
 import HeaderLogo from "@/components/app/app"
-import Profile from "@/app/(website)/platform/(content)/student/profile/_components/profile.server.dropdown"
+import Profile from "@/app/features/user/student/_components/profile/profile.dropdown/profile.dropdown.server"
 import MyLearningTrigger from "./_parts/trigger"
 import HeaderBanner from "./_parts/branding" 
 

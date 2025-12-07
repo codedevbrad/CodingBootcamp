@@ -26,7 +26,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils";
 import { useNotes } from "../../useNotes"
-import ProfileDisplayed from "@/app/(website)/platform/(content)/student/profile/_components/profile.client.displayed"
+import {ProfileDisplayed} from "@/app/features/user/student/_components/profile/profile.inline/profile.inline.client"
 
 export function AppSidebar() {
   const pathname = usePathname();

@@ -1,6 +1,6 @@
 "use server"
 
-import ProfileEditClient from "./profile.edit"
+import ProfileEditClient from "../../../../../../features/user/student/_components/profile/profile.edit"
 
 export default async function ProfileEditPage() {
     return (

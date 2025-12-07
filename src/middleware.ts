@@ -1,6 +1,7 @@
 // middleware.ts
 import { NextResponse } from "next/server"
 import { auth } from "@/auth" // your re-export from NextAuth config
+import { UserRole } from "@prisma/client"
 
 export default auth(async (req) => {
   const { nextUrl } = req
@@ -8,12 +9,17 @@ export default auth(async (req) => {
   const session = req.auth // session decoded by Auth.js
 
   const isStudentArea = pathname.startsWith("/platform")
-  const isTutorArea   = pathname.startsWith("/tutorHub")
+  const isTutorArea   = pathname.startsWith("/tutorhub")
 
   // Allow guests (unauthenticated users) to access /platform with free account
   // Platform is open to everyone - no authentication required
   if (isStudentArea) {
     // Allow all users (authenticated and guests) to access platform
+    if ( pathname.startsWith("/platform/student") && !session?.user && session?.user?.role !== UserRole.STUDENT ) {
+      return NextResponse.redirect(new URL("/platform", nextUrl))
+    }
+    // protect platform / student / tutored ( tutor subscription required )
+
     return NextResponse.next()
   }
 
@@ -43,6 +49,6 @@ export default auth(async (req) => {
 export const config = {
   matcher: [
     "/platform/:path*",
-    "/tutorHub/:path*",
+    "/tutorhub/:path*",
   ],
 }

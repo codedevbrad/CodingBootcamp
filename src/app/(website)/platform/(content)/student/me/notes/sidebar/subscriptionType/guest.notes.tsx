@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ProfileDisplayed from "@/app/(website)/platform/(content)/student/profile/_components/profile.client.displayed"
+import {ProfileDisplayed} from "@/app/features/user/student/_components/profile/profile.inline/profile.inline.client"
 
 export function GuestNotesSidebar() {
   const pathname = usePathname();

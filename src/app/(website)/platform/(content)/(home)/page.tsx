@@ -3,7 +3,7 @@
 import { PlatformSectionsGrid } from "@/app/(website)/platform/lib/navigation/content.as.blocks"
 import StartHere from "@/app/(website)/platform/lib/navigation/firstSteps/starthere"
 import GreetingToStudent from "@/app/(website)/platform/lib/personalisation/greeting"
-import GuestOnboarding from "@/app/(website)/platform/(content)/guest/_components/quest.onboard"
+import GuestOnboarding from "@/app/features/user/guest/_components/quest.onboard"
 
 export default async function PlatformHome() {
   return (

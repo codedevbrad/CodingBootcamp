@@ -1,5 +1,5 @@
 "use server"
-import StudentFullProfile from "./_components/profile.card/student.profile"
+import StudentFullProfile from "../../../../../features/user/student/_components/profile/profile.card/student.profile"
 
 export default async function ProfilePage() {
     return (

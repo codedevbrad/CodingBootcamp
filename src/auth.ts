@@ -5,8 +5,10 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db/prisma"
 import { UserRole, SubscriptionTier } from "@prisma/client"
-import { CreateNewStudent } from "./app/(website)/platform/db/db.student/db.student.creation"
 import { authProviders } from "./app/auth/providers"
+
+import { CreateNewStudent } from "./app/features/user/student/_creation/student.creation"
+
 
 export type UserBasicSession = {
   id: string;
@@ -16,17 +18,11 @@ export type UserBasicSession = {
   role?: UserRole;
 }
 
-export type UserWithStudentProfileSession = UserBasicSession & {
-  subscriptionTier?: SubscriptionTier | null;
-}
-
-export type UserWithSession = UserBasicSession | UserWithStudentProfileSession;
-
 declare module "next-auth" {
   export interface Session {
     provider?: string;
     accessToken?: string;
-    user: UserWithSession;
+    user: UserBasicSession;
   }
 }
 
@@ -62,56 +58,28 @@ export const {
   providers: authProviders,
   callbacks: {
     async jwt({ token, user, account }) {
-      // 🔁 Always resolve a user id (first login: user.id, later: token.sub)
       const userId = user?.id ?? token.sub;
-
+    
       try {
         if (userId) {
+          // First, get the user's role
           const dbUser = await prisma.user.findUnique({
             where: { id: userId },
-            select: { 
-              role: true,
-              studentProfile: {
-                select: {
-                  subscriptions: {
-                    select: { tier: true, status: true },
-                  },
-                },
-              }
-            },
+            select: { role: true },
           });
-
-          // Keep role in sync with DB; fall back to existing token role or STUDENT
-          token.role = dbUser?.role ?? (token.role as UserRole) ?? UserRole.STUDENT;
-          
-          // Sync subscription tier for students (only if ACTIVE)
-          if (dbUser?.role === UserRole.STUDENT) {
-            const subscription = dbUser.studentProfile?.subscriptions;
-            token.subscriptionTier = (subscription?.status === "ACTIVE") ? subscription.tier : null;
-          } 
-          else {
-            token.subscriptionTier = null;
-          }
-          
-        } else {
-          // No user yet (should be rare) – ensure a sane default
-          token.role = (token.role as UserRole) ?? UserRole.STUDENT;
-          token.subscriptionTier = null;
+    
+          token.role = dbUser?.role ?? (token.role as UserRole);
         }
       } catch (err) {
-
         console.error("🎫 JWT role/subscription refresh failed:", err);
-        // Don’t break auth if DB is down; keep previous or default
-        token.role = (token.role as UserRole) ?? UserRole.STUDENT;
-        token.subscriptionTier = token.subscriptionTier ?? null;
       }
-
-      // Provider metadata (first login or when account rotates)
+    
+      // Provider metadata
       if (account) {
         token.provider = account.provider;
         if (account.access_token) token.accessToken = account.access_token;
       }
-
+    
       return token;
     },
 
@@ -121,10 +89,6 @@ export const {
 
       session.user.id = token.sub!;
       session.user.role = token.role as UserRole | undefined;
-      
-      if (session.user.role === UserRole.STUDENT) {
-          session.user.subscriptionTier = token.subscriptionTier as SubscriptionTier | null | undefined;
-      }
 
       console.log("🔧 Session: ", session);
       return session;
