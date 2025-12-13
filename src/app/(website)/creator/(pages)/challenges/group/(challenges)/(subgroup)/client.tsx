@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SubGroupModal from "./modal";
-import { deleteSubGroup } from "../../../db";
+import { deleteSubGroup } from "../../../../../../../features/challenges/creator/domains/db";
 
 export default function SubGroupListClient({
   groupId,

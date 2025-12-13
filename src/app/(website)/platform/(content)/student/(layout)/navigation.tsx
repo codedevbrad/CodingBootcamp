@@ -6,7 +6,7 @@ const navigation = {
     "basic":[
     {
         label: "My Dashboard",
-        href: "/platform/student/me",
+        href: "/platform/student/",
         icon: <Home className="h-4 w-4" />,
 
     },
@@ -16,20 +16,20 @@ const navigation = {
         icon: <User className="h-4 w-4" />,
     },
     {
-        label: "My Notes",
-        href: "/platform/student/me/notes",
+        label: "My Research",
+        href: "/platform/student/research",
         icon: <FileText className="h-4 w-4" />,
     },
 ],
 "tutored":[
         {
             label: "My Sessions",
-            href: "/platform/student/me/tutored/sessions",
+            href: "/platform/student/tutored/sessions",
             icon: <Calendar className="h-4 w-4" />,
         },
         {
             label: "My Homework",
-            href: "/platform/student/me/tutored/homework",
+            href: "/platform/student/tutored/homework",
             icon: <Book className="h-4 w-4" />,
         },
     ]

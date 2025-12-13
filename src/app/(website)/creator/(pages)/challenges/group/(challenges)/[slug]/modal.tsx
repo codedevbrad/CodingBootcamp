@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createChallenge, updateChallenge } from "../../../db";
+import { createChallenge, updateChallenge } from "../../../../../../../features/challenges/creator/domains/db";
 import type {
   Challenge,
   Category,

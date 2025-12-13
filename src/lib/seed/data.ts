@@ -20,7 +20,7 @@
     },
   ];
 
-  /* ---------------------------- LANGUAGE SEED ---------------------------- */
+  /* ---------------------------- LANGUAGE SEED ------------------------------ */
   export const languages = [
     { key: "TypeScript", title: "TypeScript", description: "Typed superset of JavaScript." },
     { key: "JavaScript", title: "JavaScript", description: "The language of the web." },
@@ -31,6 +31,12 @@
     { key: "Go", title: "Go", description: "High-performance server language." },
     { key: "Rust", title: "Rust", description: "Memory-safe low-level language." },
   ];
+
+  /* ----------------------------- CONCEPTS  SEED ---------------------------- */
+
+
+  /* -----------------------------  TOPICS  SEED ----------------------------- */
+
 
   /* ----------------------------- CATEGORY SEED ----------------------------- */
   export const categories = [

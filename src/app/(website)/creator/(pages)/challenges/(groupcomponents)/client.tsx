@@ -2,7 +2,7 @@
 
 import { useState } from "react"; 
 import ChallengeGroupModal from "../group/modal";
-import { deleteChallengeGroup } from "../db";
+import { deleteChallengeGroup } from "../../../../../features/challenges/creator/domains/db";
 
 import ChallengeGroupItem from "./challenge.group";
 

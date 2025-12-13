@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import ColorPicker from "@/components/custom/gradients/picker";
-import { createChallengeGroup, updateChallengeGroup } from "../db";
+import { createChallengeGroup, updateChallengeGroup } from "../../../../../features/challenges/creator/domains/db";
 
 // 👇 100% reliable client-only slugify
 const slugifyClient = (str) =>

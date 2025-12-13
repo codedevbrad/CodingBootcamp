@@ -65,7 +65,6 @@ model ServiceKey {
 }
 
 
-
 enum UserRole {
   ADMIN
   TUTOR
@@ -104,6 +103,22 @@ model AdminProfile {
   updatedAt DateTime @updatedAt
 }
 
+model TutorInvitation {
+  id          String   @id @default(cuid())
+  email       String
+  invitationId String  @unique // The special ID used in the URL slug
+  used        Boolean  @default(false)
+  usedAt      DateTime?
+  usedBy      String?  // userId who used it
+  createdBy   String   // admin userId who created it
+  
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime? // Optional: expiration date
+  
+  @@index([invitationId])
+  @@index([email])
+  @@map("tutor_invitations")
+}
 
 model TutorProfile {
   id         String   @id @default(cuid())
@@ -114,6 +129,7 @@ model TutorProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   tutorSubscriptions TutorSubscription[]
+  tutorRequests      TutorRequest[]
 
   availability Json? // e.g. { "monday": ["10:00", "14:00"], "tuesday": ["09:00", "13:00"] }
 
@@ -136,6 +152,7 @@ model StudentProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   tutorSubscriptions TutorSubscription[]
+  tutorRequests      TutorRequest[]
   moduleSubscriptions ModuleSubscription[]
 
   notes            Note[]
@@ -174,15 +191,47 @@ enum ModuleType {
 }
 
 
+enum TutorRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+
+model TutorRequest {
+  id String @id @default(cuid())
+  studentProfileId String
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  tutorProfileId String
+  tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  
+  status TutorRequestStatus @default(PENDING)
+  
+  requestAt DateTime @default(now())
+  respondedAt DateTime? // When tutor accepts/rejects
+  cancelledAt DateTime? // When student cancels
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Prevent duplicate requests of the same status between same student-tutor pair
+  // This allows retries after rejection while preventing duplicate pending requests
+  @@unique([studentProfileId, tutorProfileId, status])
+  @@index([tutorProfileId, status])
+  @@index([studentProfileId, status])
+}
+
 
 model TutorSubscription {
   id String @id @default(cuid())
 
   tutorProfileId String
-  tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade) // 👈 add
+  tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
 
   studentProfileId String
-  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade) // 👈 add
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
 
   homework   Homework[]
   sessions   TutoringSession[]
@@ -195,6 +244,7 @@ model TutorSubscription {
 
   @@index([tutorProfileId])
   @@index([studentProfileId])
+  @@unique([tutorProfileId, studentProfileId]) // One active subscription per tutor-student pair
 }
 
 
@@ -302,6 +352,48 @@ model Inspiration {
 }
 
 
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+
+  title       String
+  description String?
+  content     Json?
+  guide       Json?
+  estHours    Int
+  color       String?
+
+  tags        String[] @default([])
+  categories  ProjectCategory[]
+  languages   ProjectLanguage[]
+
+  difficulty  Difficulty? @relation(fields: [difficultyId], references: [id], onDelete: SetNull)
+  difficultyId String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model ProjectCategory {
+  projectId String
+  categoryId String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, categoryId])
+}
+
+
+model ProjectLanguage {
+  projectId String
+  languageId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, languageId])
+}
 
 
 model ChallengeGroup {
@@ -405,6 +497,7 @@ model Category {
 
   challenges  Challenge[]
   topics      TopicCategory[]
+  projects    ProjectCategory[]
 }
 
 
@@ -416,6 +509,7 @@ model Difficulty {
   order       Int       @default(1)
 
   challenges  Challenge[]
+  projects    Project[]
 }
 
 
@@ -430,6 +524,7 @@ model Language {
 
   challenges  ChallengeLanguage[]
   topics      TopicLanguage[]
+  projects    ProjectLanguage[]
 }
 
 

@@ -1,6 +1,6 @@
 // src/app/(creator)/challenges/page.tsx
 
-import { getChallengeGroupsWithRelations  } from "./db";
+import { getChallengeGroupsWithRelations  } from "../../../../features/challenges/creator/domains/db";
 import ChallengeGroupAdmin from "./(groupcomponents)/client";
 import CartoonCard from "@/components/custom/cartoonCard";
 

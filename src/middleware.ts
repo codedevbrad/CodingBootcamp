@@ -11,13 +11,29 @@ export default auth(async (req) => {
   const isStudentArea = pathname.startsWith("/platform")
   const isTutorArea   = pathname.startsWith("/tutorhub")
 
+  console.log("isStudentArea", isStudentArea)
+  console.log("role", session?.user?.role);    
+  
   // Allow guests (unauthenticated users) to access /platform with free account
   // Platform is open to everyone - no authentication required
   if (isStudentArea) {
-    // Allow all users (authenticated and guests) to access platform
-    if ( pathname.startsWith("/platform/student") && !session?.user && session?.user?.role !== UserRole.STUDENT ) {
-      return NextResponse.redirect(new URL("/platform", nextUrl))
+    // Protect /platform/student routes from TUTORs
+    if (pathname.startsWith("/platform/student")) {
+      // Block TUTORs from accessing student routes
+      if (session?.user?.role === UserRole.TUTOR) {
+        const errorUrl = new URL("/auth/unauthorized", nextUrl)
+        errorUrl.searchParams.set("reason", "student-area-only")
+        return NextResponse.redirect(errorUrl)
+      }
+      
+      // If authenticated but not a STUDENT, redirect to platform home
+      if (session?.user && session.user.role !== UserRole.STUDENT) {
+        return NextResponse.redirect(new URL("/platform", nextUrl))
+      }
+      
+      // Allow STUDENTs and unauthenticated users (guests) to access
     }
+    
     // protect platform / student / tutored ( tutor subscription required )
 
     return NextResponse.next()

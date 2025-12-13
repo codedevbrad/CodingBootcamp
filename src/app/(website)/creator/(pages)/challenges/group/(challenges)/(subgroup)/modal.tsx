@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createSubGroup, updateSubGroup } from "../../../db";
+import { createSubGroup, updateSubGroup } from "../../../../../../../features/challenges/creator/domains/db";
 
 function slugify(str: string) {
   return str

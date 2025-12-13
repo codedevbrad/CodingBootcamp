@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import MultiSelect from "./multiSelect";
+import LanguageMultiSelect from "@/app/features/languages/_shared/_components/languageSelect";
+import CategoryMultiSelect from "@/app/features/categories/_shared/_components/categorySelect";
 
 import {
   createTopic,
@@ -21,8 +22,7 @@ import {
   deleteTopic,
 } from "../../db";
 
-import { useLanguages }  from "@/app/features/languages/useLanguages";
-import { useCategories } from "@/app/features/categories/_shared/_contexts/useCategories";
+// ... existing code ...
 
 function slugify(str: string) {
   return str
@@ -56,9 +56,6 @@ export default function TopicModal({
   const [categoryIds, setCategoryIds] = useState(
     topic?.categories?.map((c: any) => c.categoryId) ?? []
   );
-
-  const { data: languages } = useLanguages();
-  const { data: categories } = useCategories();
 
   const [loading, setLoading] = useState(false);
 
@@ -132,17 +129,13 @@ export default function TopicModal({
           </div>
 
           {/* LANGUAGES */}
-          <MultiSelect
-            label="Languages"
-            items={languages ?? []}
+          <LanguageMultiSelect
             selected={languageIds}
             onChange={setLanguageIds}
           />
 
           {/* CATEGORIES */}
-          <MultiSelect
-            label="Categories"
-            items={categories ?? []}
+          <CategoryMultiSelect
             selected={categoryIds}
             onChange={setCategoryIds}
           />

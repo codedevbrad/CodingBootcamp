@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db/prisma";
 import ChallengesInGroupClient from "./client";
 
-import { getChallengeGroupById , getSubGroupsForGroup } from "../../../db";
+import { getChallengeGroupById , getSubGroupsForGroup } from "../../../../../../../features/challenges/creator/domains/db";
 import SubGroupListClient from "../(subgroup)/client";
 
 export default async function ChallengeGroupPage({ params }) {

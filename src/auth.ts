@@ -8,6 +8,8 @@ import { UserRole, SubscriptionTier } from "@prisma/client"
 import { authProviders } from "./app/auth/providers"
 
 import { CreateNewStudent } from "./app/features/user/student/_creation/student.creation"
+import { getTutorInvitationByEmail, markInvitationAsUsed } from "./app/features/portals/adminhub/domains/db.tutor-invitations/db.tutor-invitations"
+import { setTutorProfile, updateUserRole } from "./app/features/portals/adminhub/domains/db.users/db.users"
 
 
 export type UserBasicSession = {
@@ -90,7 +92,7 @@ export const {
       session.user.id = token.sub!;
       session.user.role = token.role as UserRole | undefined;
 
-      console.log("🔧 Session: ", session);
+      // console.log("🔧 Session: ", session);
       return session;
     },
   },
@@ -104,9 +106,35 @@ export const {
     async createUser({ user }) {
       console.log("📧 Event: createUser", user.id);
       try {
+        // Check if there's a pending tutor invitation for this email
+        if (user.email) {
+          const invitation = await getTutorInvitationByEmail(user.email);
+          
+          if (invitation) {
+            // Valid invitation found - create tutor profile instead
+            console.log("✅ Found tutor invitation for", user.email);
+            
+            await Promise.all([
+              updateUserRole(user.id, UserRole.TUTOR),
+              setTutorProfile(user.id),
+              markInvitationAsUsed(invitation.invitationId, user.id),
+            ]);
+            
+            console.log("✅ Tutor profile created from invitation");
+            return;
+          }
+        }
+        
+        // Default: create student profile (existing behavior)
         await CreateNewStudent(user);
       } catch (error) {
-        console.error("Error creating StudentProfile:", error);
+        console.error("Error creating user profile:", error);
+        // Fallback to student profile on error
+        try {
+          await CreateNewStudent(user);
+        } catch (fallbackError) {
+          console.error("Error creating StudentProfile fallback:", fallbackError);
+        }
       }
     },
     async updateUser(message) {

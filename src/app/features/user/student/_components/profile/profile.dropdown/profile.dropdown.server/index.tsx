@@ -16,12 +16,13 @@ import { UserAvatar } from "../../../../../../../../components/custom/userAvatar
 import GuestProfile from "@/app/features/user/guest/_components/guest.profile"
 import SignOutButton from "./_components/signoutBtn"
 
-import CurrentSubscriptionTier from "@/app/features/subscription/_shared/student/tierDisplay"
+import CurrentSubscriptionTier from "@/app/features/subscription/tutored/connection/student/_components/tierDisplay"
 
 import { ProfileLink, SubscriptionLink } from "../../_links"
 
 import RenderBasedOnUserType from "@/app/auth/session/renderSwitch/server.renderswitch"
 import { getUser } from "@/app/auth/session/auth.server.getUser"
+import { StudentHubBtn } from "../../../studentHubBtn"
 
 async function ProfileMenuStudent( ) {
 
@@ -57,14 +58,18 @@ async function ProfileMenuStudent( ) {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem>
+                <StudentHubBtn />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
                 <ProfileLink />
             </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem>
           <SubscriptionLink />
         </DropdownMenuItem>
 

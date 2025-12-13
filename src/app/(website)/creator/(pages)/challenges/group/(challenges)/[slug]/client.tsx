@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import ChallengeModal from "./modal";
-import { deleteChallenge } from "../../../db";
+import { deleteChallenge } from "../../../../../../../features/challenges/creator/domains/db";
 
 // Prisma Types
 import type {
