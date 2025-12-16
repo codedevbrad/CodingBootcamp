@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Plus, Edit } from "lucide-react";
+import { Calendar, Clock, Plus, Edit, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { Prisma, SessionLength, TutoringSessionStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -161,6 +161,12 @@ export default function SessionsClient({
                     <Badge variant="outline">
                       {getSessionLengthLabel(session.length)}
                     </Badge>
+                    <Link href={`/tutorhub/students/${studentId}/sessions/${session.id}`}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View
+                      </Button>
+                    </Link>
                     <Link href={`/tutorhub/students/${studentId}/sessions/${session.id}/edit`}>
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4 mr-1" />
@@ -227,6 +233,12 @@ export default function SessionsClient({
                     <Badge variant="outline">
                       {getSessionLengthLabel(session.length)}
                     </Badge>
+                    <Link href={`/tutorhub/students/${studentId}/sessions/${session.id}`}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View
+                      </Button>
+                    </Link>
                     <Link href={`/tutorhub/students/${studentId}/sessions/${session.id}/edit`}>
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4 mr-1" />

@@ -3,11 +3,11 @@
 import { getSessionById } from "@/app/features/subscription/tutored/connection/tutor/db/db.sessions";
 import { getStudentSubscription } from "@/app/features/subscription/tutored/connection/tutor/db/db.student-details";
 import { notFound } from "next/navigation";
-import SessionForm from "../../_components/SessionForm";
+import SessionViewClient from "./client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default async function EditSessionPage({
+export default async function SessionViewPage({
   params,
 }: {
   params: { studentId: string; sessionId: string };
@@ -30,17 +30,15 @@ export default async function EditSessionPage({
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Edit Session</h1>
+        <h1 className="text-3xl font-bold mb-2">Session Details</h1>
         <p className="text-muted-foreground">
-          Update session details for {subscription.student.user.name}
+          View session information for {subscription.student.user.name}
         </p>
       </div>
 
-      <SessionForm
+      <SessionViewClient
         studentId={params.studentId}
-        mode="edit"
-        sessionId={params.sessionId}
-        initialSession={session}
+        session={session}
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { getStudentSubscription } from "@/app/features/subscription/tutored/connection/tutor/db/db.student-details";
 import { notFound } from "next/navigation";
-import CreateSessionForm from "./form";
+import SessionForm from "../_components/SessionForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -34,7 +34,7 @@ export default async function CreateSessionPage({
         </p>
       </div>
 
-      <CreateSessionForm studentId={params.studentId} />
+      <SessionForm studentId={params.studentId} mode="create" />
     </div>
   );
 }

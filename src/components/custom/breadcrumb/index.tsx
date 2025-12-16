@@ -40,11 +40,36 @@ function isRouteGroup(segment: string): boolean {
 }
 
 /**
- * PlatformBreadcrumb component that displays navigation breadcrumbs
- * Shows the full path from /platform to the current page
+ * Detects the base path from the pathname and returns the path with formatted label
+ * Supports /platform, /admin, and /tutorhub
+ */
+function getBasePath(pathname: string): { path: string; label: string } | null {
+  if (pathname.startsWith("/platform")) {
+    return { path: "/platform", label: "Platform" }
+  }
+  if (pathname.startsWith("/admin")) {
+    return { path: "/admin", label: "Admin" }
+  }
+  if (pathname.startsWith("/tutorhub")) {
+    return { path: "/tutorhub", label: "Tutorhub" }
+  }
+  return null
+}
+
+/**
+ * CustomBreadcrumb component that displays navigation breadcrumbs
+ * Shows the full path from the base path (/platform, /admin, or /tutorhub) to the current page
  */
 export default function CustomBreadcrumb() {
   const pathname = usePathname()
+
+  // Detect the base path
+  const basePath = getBasePath(pathname)
+  
+  // If no supported base path is detected, don't show breadcrumb
+  if (!basePath) {
+    return null
+  }
 
   // Split pathname into segments and filter out empty strings
   const segments = pathname.split("/").filter(Boolean)
@@ -52,11 +77,12 @@ export default function CustomBreadcrumb() {
   // Filter out route groups and build breadcrumb items
   const breadcrumbItems: Array<{ href: string; label: string }> = []
   
-  // Always start with Platform
-  breadcrumbItems.push({ href: "/platform", label: "Platform" })
+  // Start with the detected base path
+  breadcrumbItems.push({ href: basePath.path, label: basePath.label })
   
-  // Process segments after /platform
-  let currentPath = "/platform"
+  // Process segments after the base path
+  // The base path is always the first segment (index 0), so start from index 1
+  let currentPath = basePath.path
   for (let i = 1; i < segments.length; i++) {
     const segment = segments[i]
     
@@ -74,8 +100,7 @@ export default function CustomBreadcrumb() {
     breadcrumbItems.push({ href: currentPath, label })
   }
 
-  // Don't show breadcrumb if we're just on /platform
-
+  // Don't show breadcrumb if we're just on the base path
   if (breadcrumbItems.length <= 1) {
     return null
   }
