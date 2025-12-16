@@ -120,18 +120,18 @@ model TutorInvitation {
   @@map("tutor_invitations")
 }
 
+
 model TutorProfile {
   id         String   @id @default(cuid())
   userId     String   @unique
   bio        String?
-  hourlyRate Decimal? @db.Decimal(10, 2)
-
+  hourlyRate Int?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   tutorSubscriptions TutorSubscription[]
   tutorRequests      TutorRequest[]
 
-  availability Json? // e.g. { "monday": ["10:00", "14:00"], "tuesday": ["09:00", "13:00"] }
+  availability Json?  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -248,18 +248,44 @@ model TutorSubscription {
 }
 
 
-
 enum SessionLength {
-  MIN60
-  MIN90
-  MIN120
+  MAX60
+  MAX90
+  MAX120
 }
 
 
+enum TutoringSessionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+  POSTPONED
+  MISSED
+  NO_SHOW
+  NO_SHOW_NO_REASON
+  NO_SHOW_WITH_REASON
+  NO_SHOW_WITH_REASON_AND_RESCHEDULED
+}
+
+ 
+
+model TutoringSessionCategory {
+  sessionId String
+  categoryId String
+  session TutoringSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, categoryId])
+}
+
+ 
 model TutoringSession {
   id          String         @id @default(cuid())
   title       String
   description String?
+
+  status TutoringSessionStatus @default(PENDING)
 
   // who
   tutorSubscriptionId String
@@ -267,7 +293,13 @@ model TutoringSession {
 
   // when
   startTime  DateTime
-  length     SessionLength  @default(MIN60)
+  length     SessionLength  @default(MAX60)
+
+  preSessionNotes Json?
+  postSessionContent Json?
+ 
+  categories  TutoringSessionCategory[]
+
 
   // housekeeping
   createdAt  DateTime @default(now())
@@ -275,6 +307,7 @@ model TutoringSession {
 
   @@index([startTime])
 }
+
 
 
 enum HomeworkStatus {
@@ -498,6 +531,7 @@ model Category {
   challenges  Challenge[]
   topics      TopicCategory[]
   projects    ProjectCategory[]
+  sessions    TutoringSessionCategory[]
 }
 
 

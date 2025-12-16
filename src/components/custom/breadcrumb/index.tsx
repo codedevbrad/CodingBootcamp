@@ -43,13 +43,8 @@ function isRouteGroup(segment: string): boolean {
  * PlatformBreadcrumb component that displays navigation breadcrumbs
  * Shows the full path from /platform to the current page
  */
-export default function PlatformBreadcrumb() {
+export default function CustomBreadcrumb() {
   const pathname = usePathname()
-  
-  // Only show breadcrumb if we're on a platform route
-  if (!pathname?.startsWith("/platform")) {
-    return null
-  }
 
   // Split pathname into segments and filter out empty strings
   const segments = pathname.split("/").filter(Boolean)

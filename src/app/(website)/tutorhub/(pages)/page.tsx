@@ -64,7 +64,7 @@ export default async function TutorHubDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold mb-4">{activeStudentsCount}</div>
-                        <Link href="/tutorhub/subscriptions">
+                        <Link href="/tutorhub/students">
                             <Button variant="outline" className="w-full">
                                 View Students
                                 <ArrowRight className="w-4 h-4 ml-2" />

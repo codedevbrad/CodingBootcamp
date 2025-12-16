@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Header from "./(layout)/header/index" 
 import { SidebarProvider } from "@/components/ui/sidebar"
 import RenderNotesSidebar from "./(content)/student/research/sidebar/render.notes"
-import PlatformBreadcrumb from "./(layout)/breadcrumb"
+import PlatformBreadcrumb from "../../../components/custom/breadcrumb"
 
 export const metadata: Metadata = {
   title: "The Code Bootcamp",

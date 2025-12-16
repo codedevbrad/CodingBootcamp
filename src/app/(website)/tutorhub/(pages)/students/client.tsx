@@ -3,9 +3,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { UserCheck, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UserCheck, Users, Calendar, BookOpen, ArrowRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Prisma } from "@prisma/client";
+import Link from "next/link";
 
 type TutorSubscriptionWithStudent = Prisma.TutorSubscriptionGetPayload<{
   include: {
@@ -19,6 +21,12 @@ type TutorSubscriptionWithStudent = Prisma.TutorSubscriptionGetPayload<{
             image: true;
           };
         };
+      };
+    };
+    _count: {
+      select: {
+        sessions: true;
+        homework: true;
       };
     };
   };
@@ -51,7 +59,7 @@ export default function TutorSubscriptionsClient({
               .toUpperCase() || "?";
 
             return (
-              <Card key={subscription.id}>
+              <Card key={subscription.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <Avatar>
@@ -69,22 +77,26 @@ export default function TutorSubscriptionsClient({
                   </Badge>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="font-medium">Level:</span> {subscription.student.level}
-                    </div>
-                    {subscription.student.bio && (
-                      <div>
-                        <span className="font-medium">Bio:</span>{" "}
-                        <span className="text-muted-foreground">
-                          {subscription.student.bio.substring(0, 100)}
-                          {subscription.student.bio.length > 100 ? "..." : ""}
-                        </span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{subscription._count.sessions} Sessions</span>
                       </div>
-                    )}
-                    <div className="text-muted-foreground">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <BookOpen className="w-4 h-4" />
+                        <span>{subscription._count.homework} Homework</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
                       Assigned {formatDistanceToNow(new Date(subscription.assignedAt), { addSuffix: true })}
                     </div>
+                    <Link href={`/tutorhub/students/${subscription.studentProfileId}`}>
+                      <Button className="w-full" variant="outline">
+                        View Student
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
