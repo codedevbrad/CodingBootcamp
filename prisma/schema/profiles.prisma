@@ -1,0 +1,93 @@
+
+model AdminProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  permissions String[] // Admin permissions
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+enum TutorRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+
+model TutorRequest {
+  id String @id @default(cuid())
+  studentProfileId String
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  tutorProfileId String
+  tutorProfile TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  
+  status TutorRequestStatus @default(PENDING)
+  
+  requestAt DateTime @default(now())
+  respondedAt DateTime? // When tutor accepts/rejects
+  cancelledAt DateTime? // When student cancels
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Prevent duplicate requests of the same status between same student-tutor pair
+  // This allows retries after rejection while preventing duplicate pending requests
+  @@unique([studentProfileId, tutorProfileId, status])
+  @@index([tutorProfileId, status])
+  @@index([studentProfileId, status])
+}
+
+
+
+model TutorProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  bio        String?
+  hourlyRate Int?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tutorSubscriptions TutorSubscription[]
+  tutorRequests      TutorRequest[]
+
+  availability Json?  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+enum StudentLevel {
+  BEGINNER 
+  INTERMEDIATE 
+  EXPERT
+}
+
+
+
+model StudentProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tutorSubscriptions TutorSubscription[]
+  tutorRequests      TutorRequest[]
+  moduleSubscriptions ModuleSubscription[]
+
+  notes            Note[]
+
+  level    StudentLevel   @default(BEGINNER)
+  bio      String         @default("")
+  countryCode String      @default("") // e.g. "US", "GB", "DE"
+  skills   String[]       @default([])
+  goals    String         @default("")
+  streak   Int            @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

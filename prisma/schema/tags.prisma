@@ -1,0 +1,49 @@
+
+//
+// Challenge Units — steps, tasks, sections.
+//
+
+model Category {
+  id          String   @id @default(cuid())
+  key         String   @unique   // stable internal name: SystemDesign, Frontend, etc.
+  title       String
+  description String
+
+  icon        String?
+  color       String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  challenges  Challenge[]
+  topics      TopicCategory[]
+  projects    ProjectCategory[]
+  sessions    TutoringSessionCategory[]
+}
+
+
+model Difficulty {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String?
+  order       Int       @default(1)
+
+  challenges  Challenge[]
+  projects    Project[]
+}
+
+
+model Language {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String?
+
+  icon        String?
+  color       String?
+
+  challenges  ChallengeLanguage[]
+  topics      TopicLanguage[]
+  projects    ProjectLanguage[]
+}

@@ -1,0 +1,51 @@
+
+
+model ModuleSubscription {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  module     ModuleType 
+  expiresAt  DateTime? // null = permanent
+  createdAt  DateTime @default(now())
+
+  @@index([studentId])
+}
+
+
+enum ModuleType {
+  CREATING
+  TOPICS
+  CHALLENGES
+  COHORTS
+  JOURNEYS
+  MODULE_HOMEWORK
+}
+
+
+
+model TutorSubscription {
+  id String @id @default(cuid())
+
+  tutorProfileId String
+  tutor          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  studentProfileId String
+  student          StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+
+  homework   Homework[]
+  sessions   TutoringSession[]
+  
+  workReviews WorkReview[]
+
+
+  assignedAt DateTime         @default(now())
+  endedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tutorProfileId])
+  @@index([studentProfileId])
+  @@unique([tutorProfileId, studentProfileId]) // One active subscription per tutor-student pair
+}

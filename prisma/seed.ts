@@ -31,6 +31,7 @@ async function main() {
   const languages = [
     { key: "TypeScript", title: "TypeScript", description: "Typed superset of JavaScript." },
     { key: "JavaScript", title: "JavaScript", description: "The language of the web." },
+    { key: "React", title: "React", description: "The library for web and native user interfaces." },
     { key: "Python", title: "Python", description: "High-level language great for algorithms." },
     { key: "SQL", title: "SQL", description: "Relational database query language." },
     { key: "NoSQL", title: "NoSQL", description: "Non-relational databases like MongoDB, DynamoDB, etc." },
@@ -83,6 +84,13 @@ async function main() {
           description: "APIs, auth, storage, webhooks, infra.",
           icon: "backend-icon",
           color: "orange",
+        },
+        {
+          key: "FullStack",
+          title: "FullStack",
+          description: "FullStack development, frontend and backend.",
+          icon: "fullstack-icon",
+          color: "green",
         },
         {
           key: "Algorithms",

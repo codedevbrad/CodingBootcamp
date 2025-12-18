@@ -1,0 +1,243 @@
+
+model Inspiration {
+  id        String   @id @default(cuid())
+  title     String   // title of the inspiration
+  content   Json     // structured content for the inspiration (e.g. text, images)
+  sourceUrl String?  // optional source of the inspiration
+  tags      String[] @default([]) // e.g. ["motivation", "study", "focus"]
+  type      String?  // e.g. "quote", "tip", "story"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+
+  title       String
+  description String?
+  content     Json?
+  guide       Json?
+  estHours    Int
+  color       String?
+
+  tags        String[] @default([])
+  categories  ProjectCategory[]
+  languages   ProjectLanguage[]
+
+  difficulty  Difficulty? @relation(fields: [difficultyId], references: [id], onDelete: SetNull)
+  difficultyId String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model ProjectCategory {
+  projectId String
+  categoryId String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, categoryId])
+}
+
+
+model ProjectLanguage {
+  projectId String
+  languageId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, languageId])
+}
+
+
+model ChallengeGroup {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  title       String
+  description String?
+  color       String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  challenges  Challenge[]
+  subgroups   ChallengeSubGroup[]
+}
+
+
+model ChallengeSubGroup {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String?
+
+  groupId     String
+  group       ChallengeGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  challenges  Challenge[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+
+model Challenge {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String
+  estMins      Int
+  recommended  Boolean  @default(false)
+  tags         String[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  work         Json
+  guide        Json
+
+  // Must belong to a group
+  groupId      String
+  group        ChallengeGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // May belong to a subgroup
+  subGroupId   String?
+  subGroup     ChallengeSubGroup? @relation(fields: [subGroupId], references: [id], onDelete: Cascade)
+
+  // category
+  categoryId   String?
+  category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  // difficulty
+  difficultyId String?
+  difficulty   Difficulty? @relation(fields: [difficultyId], references: [id], onDelete: SetNull)
+
+  // languages
+  languages    ChallengeLanguage[]
+}
+
+
+//
+// Many-to-many join table for Challenge ↔ Language
+//
+
+model ChallengeLanguage {
+  challengeId String
+  languageId  String
+
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  language    Language  @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([challengeId, languageId])
+}
+
+
+
+model Concept {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  description String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  topics      Topic[]
+}
+
+
+model Topic {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  estMins     Int?
+  recommended Boolean  @default(false)
+  tags        String[] @default([])
+
+  content     Json?
+  blockData   Json?
+  guide       Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  conceptId   String
+  concept     Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  languages    TopicLanguage[]
+  categories   TopicCategory[]
+
+  // ⬇️ NEW — all blocks attached to this topic
+  blocks       TopicBlock[]
+}
+
+
+
+model TopicLanguage {
+  topicId    String
+  languageId String
+
+  topic    Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([topicId, languageId])
+}
+
+
+
+model TopicCategory {
+  topicId    String
+  categoryId String
+
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([topicId, categoryId])
+}
+
+
+model Block {
+  id          String   @id @default(cuid())
+  type        String   // "quiz", "animatedCodeChallenge"
+  title       String
+  description String?
+  summary     String?
+  data        Json
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // ⬇️ NEW — all topics that use this block
+  topics      TopicBlock[]
+}
+
+model TopicBlock {
+  id        String   @id @default(cuid())
+  summary   String?
+
+  // Useful for sorting blocks inside a topic
+  order     Int      @default(0)
+
+  // → Block
+  blockId   String
+  block     Block   @relation(fields: [blockId], references: [id], onDelete: Cascade)
+
+  // → Topic
+  topicId   String
+  topic     Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([blockId, topicId])   // Prevent duplicate links
+  @@index([topicId, order])      // For fast ordering
+}
+

@@ -1,0 +1,160 @@
+
+
+
+model TutorInvitation {
+  id          String   @id @default(cuid())
+  email       String
+  invitationId String  @unique // The special ID used in the URL slug
+  used        Boolean  @default(false)
+  usedAt      DateTime?
+  usedBy      String?  // userId who used it
+  createdBy   String   // admin userId who created it
+  
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime? // Optional: expiration date
+  
+  @@index([invitationId])
+  @@index([email])
+  @@map("tutor_invitations")
+}
+
+
+
+enum HomeworkStatus {
+  DRAFT
+  ASSIGNED
+  IN_PROGRESS
+  SUBMITTED
+  RETURNED
+  COMPLETED
+  CANCELLED
+}
+
+
+model Homework {
+  id          String          @id @default(cuid())
+  title       String
+  description String?
+
+  // 👇 the single relation you care about
+  tutorSubscriptionId String
+  tutorSubscription   TutorSubscription @relation(fields: [tutorSubscriptionId], references: [id], onDelete: Cascade)
+
+  // store your structured homework content
+  tasks Json
+
+  // workflow tracking
+  status      HomeworkStatus @default(ASSIGNED)
+  dueDate     DateTime?
+  submittedAt DateTime?
+  gradedAt    DateTime?
+
+  // optional grading + notes
+  grade     Decimal? @db.Decimal(5, 2)
+  feedback  String?
+  metadata  Json? // optional extra info like { version, tags, etc. }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tutorSubscriptionId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+
+enum SessionLength {
+  MAX60
+  MAX90
+  MAX120
+}
+
+
+enum TutoringSessionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  RESCHEDULED
+  POSTPONED
+  MISSED
+  NO_SHOW
+  NO_SHOW_NO_REASON
+  NO_SHOW_WITH_REASON
+  NO_SHOW_WITH_REASON_AND_RESCHEDULED
+}
+
+ 
+
+model TutoringSessionCategory {
+  sessionId String
+  categoryId String
+  session TutoringSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, categoryId])
+}
+
+ 
+model TutoringSession {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+
+  status TutoringSessionStatus @default(PENDING)
+
+  // who
+  tutorSubscriptionId String
+  tutorSubscription   TutorSubscription @relation(fields: [tutorSubscriptionId], references: [id], onDelete: Cascade)
+
+  // when
+  startTime  DateTime
+  length     SessionLength  @default(MAX60)
+
+  preSessionNotes Json?
+  postSessionContent Json?
+ 
+  categories  TutoringSessionCategory[]
+
+
+  // housekeeping
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([startTime])
+}
+
+
+
+
+enum WorkReviewStatus {
+  WAITING_FOR_REVIEW
+  REVIEWED
+  CANCELLED
+}
+
+
+model WorkReview {
+  id String @id @default(cuid())
+  
+  tutorSubscriptionId String
+  tutorSubscription   TutorSubscription @relation(fields: [tutorSubscriptionId], references: [id], onDelete: Cascade)
+
+  githubUrl String
+  reviewContent Json
+  studentComments Json
+
+  status WorkReviewStatus @default(WAITING_FOR_REVIEW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tutorSubscriptionId])
+}
+
+
+model StudentInvite {
+    id String @id @default(cuid())
+    email String
+    invitationId String @unique
+}
+

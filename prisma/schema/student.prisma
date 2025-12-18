@@ -1,0 +1,18 @@
+
+model Note {
+  id          String   @id @default(cuid())
+  title       String
+  content     Json     // structured data from your editor (Editor.js, etc.)
+  summary     String?  // optional short summary for previews
+  tags        String[] @default([])      // optional tags like ["react", "arrays"]
+
+  // 🔗 relations
+  studentProfileId  String
+  studentProfile    StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  // 🕓 timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([studentProfileId])
+}
