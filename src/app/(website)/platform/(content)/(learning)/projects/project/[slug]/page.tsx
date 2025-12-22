@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import ProjectView from "@/app/features/projects/student/components/ProjectView";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Kanban from "./kanban";
+import Kanban from "../../../../../../../../components/systems/kanban";
 
 export default async function ProjectPage({
   params,

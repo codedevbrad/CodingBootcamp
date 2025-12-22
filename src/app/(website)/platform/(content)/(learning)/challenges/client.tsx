@@ -3,21 +3,26 @@
 import * as React from "react";
 import Link from "next/link";
 
-import type { UIChallengeGroup } from "./db";
-
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
+import type { UIChallengeGroup, UIChallenge } from "../../../../../features/challenges/student/domains/studentChallenges";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+/* ---------------- Types ---------------- */
+type ChallengeWithGroup = UIChallenge & {
+  groupId: string;
+  groupTitle: string;
+  subgroupId?: string;
+  subgroupTitle?: string;
+};
 
 /* ---------------- Helpers ---------------- */
-function cls(...a: (string | false | null | undefined)[]) {
-  return a.filter(Boolean).join(" ");
-}
-
 function ProgressBar({ value }: { value: number }) {
   return (
     <div className="w-full h-1 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
@@ -36,139 +41,174 @@ export default function ChallengeGroupsPageClient({
   initialGroups: UIChallengeGroup[];
 }) {
   const [query, setQuery] = React.useState("");
+  const [selectedGroupId, setSelectedGroupId] = React.useState<string>("all");
 
-  const filteredGroups = React.useMemo(() => {
-    return initialGroups.map((group) => {
-      const filteredSubgroups = group.subgroups
-        .map((sg) => ({
-          ...sg,
-          challenges: sg.challenges.filter((c) =>
-            c.title.toLowerCase().includes(query.toLowerCase())
-          ),
-        }))
-        .filter((sg) => sg.challenges.length > 0);
+  // Flatten all challenges with group information
+  const allChallenges = React.useMemo<ChallengeWithGroup[]>(() => {
+    const challenges: ChallengeWithGroup[] = [];
+    
+    initialGroups.forEach((group) => {
+      // Add challenges directly in the group
+      group.challenges.forEach((challenge) => {
+        challenges.push({
+          ...challenge,
+          groupId: group.id,
+          groupTitle: group.title,
+        });
+      });
 
-      return { ...group, subgroups: filteredSubgroups };
+      // Add challenges from subgroups
+      group.subgroups.forEach((subgroup) => {
+        subgroup.challenges.forEach((challenge) => {
+          challenges.push({
+            ...challenge,
+            groupId: group.id,
+            groupTitle: group.title,
+            subgroupId: subgroup.id,
+            subgroupTitle: subgroup.title,
+          });
+        });
+      });
     });
-  }, [initialGroups, query]);
+
+    return challenges;
+  }, [initialGroups]);
+
+  // Filter challenges based on search and group
+  const filteredChallenges = React.useMemo(() => {
+    return allChallenges.filter((challenge) => {
+      const matchesSearch = challenge.title.toLowerCase().includes(query.toLowerCase()) ||
+        challenge.description?.toLowerCase().includes(query.toLowerCase());
+      const matchesGroup = selectedGroupId === "all" || challenge.groupId === selectedGroupId;
+      return matchesSearch && matchesGroup;
+    });
+  }, [allChallenges, query, selectedGroupId]);
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-5xl mx-auto">
-      <h1 className="text-4xl font-extrabold mb-6">Challenge Groups</h1>
+      <h1 className="text-4xl font-extrabold mb-6">Challenges</h1>
 
-      {/* Search */}
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search challenges…"
-        className="w-full px-3 py-2 rounded-lg border border-black/10 dark:border-white/10 mb-10"
-      />
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        {/* Search */}
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search challenges…"
+          className="flex-1 px-3 py-2 rounded-lg border border-black/10 dark:border-white/10"
+        />
 
-      {/* GROUPS */}
-      <div className="grid gap-10 sm:grid-cols-2">
-        {filteredGroups.map((group) => (
-          <section
-            key={group.id}
-            className={cls(
-              "rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-br p-6 flex flex-col",
-              group.color ||
-                "from-white to-neutral-100 dark:from-neutral-900 dark:to-neutral-800"
-            )}
-          >
-            <h2 className="text-2xl font-bold">{group.title}</h2>
-            {group.description && (
-              <p className="opacity-70 mt-1 text-sm">{group.description}</p>
-            )}
-
-            {/* --- SUBGROUPS --- */}
-            {group.subgroups.length > 0 && (
-              <div className="mt-6 space-y-8">
-                {group.subgroups.map((sg) => (
-                  <div
-                    key={sg.id}
-                    className="w-full px-4 py-3 rounded-xl bg-white/40 dark:bg-white/5 border border-black/10 dark:border-white/10"
-                  >
-                    {/* Subgroup header */}
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-semibold">{sg.title}</h3>
-
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="default" size="sm">
-                            View {sg.challenges.length} tasks
-                          </Button>
-                        </PopoverTrigger>
-
-                        <PopoverContent className="w-[430px] p-4 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900">
-                          <div className="space-y-4">
-                            {sg.challenges.map((c) => (
-                              <div
-                                key={c.id}
-                                className="p-3 rounded-xl bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10"
-                              >
-                                {/* Title row */}
-                                <div className="flex justify-between items-center mb-1">
-                                  <div className="flex items-center gap-2">
-                                    {/* LEFT DOT */}
-                                    <div className="w-2.5 h-2.5 rounded-full bg-black dark:bg-white" />
-
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <h4 className="font-semibold text-sm">
-                                        {c.title}
-                                      </h4>
-
-                                      {/* category + difficulty */}
-                                      <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10">
-                                        {c.category}
-                                      </span>
-                                      <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10">
-                                        {c.difficulty}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {/* OPEN BUTTON */}
-                                  <Button size="sm" asChild>
-                                    <Link href={`/platform/challenges/${c.slug}`}>
-                                      Open
-                                    </Link>
-                                  </Button>
-                                </div>
-
-                                {/* TIME */}
-                                <div className="flex items-center gap-2 text-xs mb-2">
-                                  <span className="px-2 py-0.5 bg-black/5 dark:bg-white/10 rounded-full">
-                                    {c.estMins}m
-                                  </span>
-                                </div>
-
-                                {/* PROGRESS BAR */}
-                                <ProgressBar value={c.progress} />
-
-                                {/* LANGUAGES */}
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                  {c.languages.map((lang) => (
-                                    <span
-                                      key={lang}
-                                      className="text-[10px] px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10"
-                                    >
-                                      {lang}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        ))}
+        {/* Group Filter */}
+        <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+          <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectValue placeholder="Filter by group" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Groups</SelectItem>
+            {initialGroups.map((group) => (
+              <SelectItem key={group.id} value={group.id}>
+                {group.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Results count */}
+      <div className="mb-6 text-sm text-muted-foreground">
+        Showing {filteredChallenges.length} of {allChallenges.length} challenges
+      </div>
+
+      {/* Challenges Grid */}
+      {filteredChallenges.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>No challenges found matching your filters.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredChallenges.map((challenge) => (
+            <div
+              key={challenge.id}
+              className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-colors"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-black dark:bg-white" />
+                    <h3 className="font-semibold text-sm leading-tight">
+                      {challenge.title}
+                    </h3>
+                  </div>
+                  {challenge.subgroupTitle && (
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {challenge.groupTitle} • {challenge.subgroupTitle}
+                    </p>
+                  )}
+                  {!challenge.subgroupTitle && (
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {challenge.groupTitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              {challenge.description && (
+                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                  {challenge.description}
+                </p>
+              )}
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1 mb-3">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10">
+                  {challenge.category}
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10">
+                  {challenge.difficulty}
+                </span>
+                {challenge.recommended && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
+                    Recommended
+                  </span>
+                )}
+              </div>
+
+              {/* Time */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs px-2 py-0.5 bg-black/5 dark:bg-white/10 rounded-full">
+                  {challenge.estMins}m
+                </span>
+              </div>
+
+              {/* Progress Bar */}
+              <ProgressBar value={challenge.progress} />
+
+              {/* Languages */}
+              {challenge.languages.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-3">
+                  {challenge.languages.map((lang) => (
+                    <span
+                      key={lang}
+                      className="text-[10px] px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Open Button */}
+              <Button size="sm" className="w-full mt-4" asChild>
+                <Link href={`/platform/challenges/${challenge.slug}`}>
+                  Open Challenge
+                </Link>
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

@@ -25,7 +25,7 @@ import {
 
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils";
-import { useNotes } from "../../useNotes"
+import { useNotes } from "@/app/features/learning/student/_contexts/useNotes"
 import {ProfileDisplayed} from "@/app/features/user/student/_components/profile/profile.inline/profile.inline.client"
 import { StudentHubBtn } from "@/app/features/user/student/_components/studentHubBtn"
 
@@ -207,6 +207,7 @@ export function AppSidebar() {
               <GraduationCap className="h-4 w-4 text-cyan-600" />
               Continue Learning
             </h4>
+
             <p className="text-xs text-gray-600">
               Last session:{" "}
               <span className="font-medium text-blue-600">
@@ -214,14 +215,16 @@ export function AppSidebar() {
               </span>
             </p>
 
-            <div>
+            <div className="py-2">
               <StudentHubBtn />
             </div>
+
           </div>
 
           <div className="mt-3 text-center text-[11px] text-muted-foreground">
             © {new Date().getFullYear()} CodeBootcamp
           </div>
+          
         </div>
       </SidebarContent>
 

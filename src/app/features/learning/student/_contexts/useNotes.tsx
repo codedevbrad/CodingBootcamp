@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR, { mutate } from "swr";
-import { getNotes, createNote, updateNote, deleteNote } from "./db";
+import { getNotes, createNote, updateNote, deleteNote } from "../domains/studentNotes";
 
 export function useNotes() {
   const { data: notes = [], isLoading } = useSWR("notes", getNotes);

@@ -23,6 +23,7 @@ import { ProfileLink, SubscriptionLink } from "../../_links"
 import RenderBasedOnUserType from "@/app/auth/session/renderSwitch/server.renderswitch"
 import { getUser } from "@/app/auth/session/auth.server.getUser"
 import { StudentHubBtn } from "../../../studentHubBtn"
+import { TutorLearningBtn } from "../../../tutorHubBtn"
 
 async function ProfileMenuStudent( ) {
 
@@ -50,7 +51,7 @@ async function ProfileMenuStudent( ) {
             </Avatar>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{user?.name ?? "User"}</p>
-              <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+              <p className="truncate text-xs text-muted-foreground">{user?.email}</p> 
             </div>
           </div>
         </DropdownMenuLabel>
@@ -61,6 +62,11 @@ async function ProfileMenuStudent( ) {
             <DropdownMenuItem>
                 <StudentHubBtn />
             </DropdownMenuItem>
+
+            <DropdownMenuItem>
+                <TutorLearningBtn />
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem>
                 <ProfileLink />

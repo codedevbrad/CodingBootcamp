@@ -134,6 +134,8 @@ export async function createChallenge(groupId: string, data: any) {
       work: {},
       guide: {},
 
+      workType: data.workType || "CODE",
+
       groupId,
       subGroupId: data.subGroupId || null,
 
@@ -180,6 +182,8 @@ export async function updateChallenge(id: string, data: any) {
       tags: Array.isArray(data.tags)
         ? data.tags
         : data.tags.split(",").map((t: string) => t.trim()),
+
+      workType: data.workType || "CODE",
 
       categoryId: data.categoryId,
       difficultyId: data.difficultyId,
@@ -269,4 +273,76 @@ export async function getSubGroupsForGroup(groupId: string) {
       },
     },
   });
+}
+
+
+/* ----------------------------------------------------
+   GET CHALLENGE BY ID (with relations)
+   ---------------------------------------------------- */
+
+export async function getChallengeById( challengeId: string) {
+  return prisma.challenge.findUnique({
+    where: { id: challengeId },
+    include: {
+      category: true,
+      difficulty: true,
+      subGroup: true,
+      group: true,
+      languages: { include: { language: true } },
+    },
+  });
+}
+
+
+/* ----------------------------------------------------
+   GET CHALLENGE BY SLUG (with relations)
+   ---------------------------------------------------- */
+
+export async function getChallengeBySlug( slug: string) {
+  return prisma.challenge.findUnique({
+    where: { slug },
+    include: {
+      category: true,
+      difficulty: true,
+      subGroup: true,
+      group: true,
+      languages: { include: { language: true } },
+    },
+  });
+}
+
+
+
+/* ----------------------------------------------------
+                UPDATE CHALLENGE WORK TYPE
+   ---------------------------------------------------- */
+
+export async function updateChallengeWorkType(id: string, workType: "CODE" | "EXERCISE" | "DIAGRAM") {
+  return prisma.challenge.update({
+    where: { id },
+    data: { workType },
+  });
+}
+
+
+
+/* ----------------------------------------------------
+               UPDATE CHALLENGE WORK JSON
+   ---------------------------------------------------- */
+
+
+export const db_updateTaskCodeData = async ({ id , data } : { id: string , data: any }) => {
+    try {
+        const taskData = await prisma.challenge.update({
+            where: { id },
+            data: {
+                work: JSON.parse(JSON.stringify(data))
+            }
+        })
+        return taskData
+    }
+    catch (error) {
+        console.error('Error updating task data:', error)
+        throw new Error('Failed to update task data')
+    }
 }

@@ -37,3 +37,5 @@ export function slugify(str: string) {
     .replace(/\s+/g, "-")             // spaces → hyphens
     .replace(/-+/g, "-");             // collapse duplicates
 }
+
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

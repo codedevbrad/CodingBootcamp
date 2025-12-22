@@ -1,4 +1,4 @@
-import { getChallengeGroupsUI } from "./db";
+import { getChallengeGroupsUI } from "../../../../../features/challenges/student/domains/studentChallenges";
 import ChallengeGroupsPageClient from "./client";
 
 export default async function Page() {

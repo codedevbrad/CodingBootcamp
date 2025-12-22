@@ -1,8 +1,8 @@
 'use client'
 
-import CodeEditorReact from './codeEditor'
+import CodeEditorReact from '@/components/systems/reactEditor';
 import InspirationCard from './challenge.ui'
-import { useState } from 'react';
+import { useState } from 'react'
 
 
 export default function ReactCssChallenge() {
@@ -14,7 +14,7 @@ export default function ReactCssChallenge() {
       <div className="w-full">
         <div>
           <InspirationCard />
-          <CodeEditorReact  />
+          <CodeEditorReact />
         </div>
       </div>
     </div>

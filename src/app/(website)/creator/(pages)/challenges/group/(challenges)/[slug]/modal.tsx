@@ -8,7 +8,7 @@ import type {
   Difficulty,
   Language,
   ChallengeSubGroup,
-  ChallengeLanguage,
+  ChallengeWorkType,
 } from "@prisma/client";
 import { slugify } from "@/lib/utils";
 
@@ -34,8 +34,8 @@ export default function ChallengeModal({
   languages: Language[];
   subgroups: ChallengeSubGroup[];
   onClose: () => void;
-  onCreated: (c: any) => void;
-  onUpdated: (c: any) => void;
+  onCreated: (c: Challenge) => void;
+  onUpdated: (c: Challenge) => void;
 }) {
   const isEdit = Boolean(challenge);
 
@@ -49,6 +49,7 @@ export default function ChallengeModal({
     tags: challenge?.tags?.join(", ") ?? "",
     languageIds: challenge?.languages?.map((l) => l.languageId) ?? [],
     subGroupId: challenge?.subGroupId ?? "",   // 👈 FIXED
+    workType: (challenge?.workType ?? "CODE") as ChallengeWorkType,
   });
 
   /* ------------------------- Auto Slug for Create ------------------------- */
@@ -170,6 +171,19 @@ export default function ChallengeModal({
               {sg.title}
             </option>
           ))}
+        </select>
+
+        {/* Work Type */}
+        <select
+          value={form.workType}
+          onChange={(e) =>
+            setForm({ ...form, workType: e.target.value as ChallengeWorkType })
+          }
+          className="w-full mb-3 px-3 py-2 rounded border"
+        >
+          <option value="CODE">Code</option>
+          <option value="EXERCISE">Exercise</option>
+          <option value="DIAGRAM">Diagram</option>
         </select>
 
         {/* Languages */}

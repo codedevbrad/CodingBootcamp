@@ -1,0 +1,1 @@
+export const gradeUrl = 'https://codetest-api.onrender.com'
